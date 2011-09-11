@@ -34,7 +34,7 @@ html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-
 
 body { margin: 0; font-size: 13px; line-height: 1.231; }
 
-body, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body, button, input, select, textarea { font-family: sans-serif; color: #202020; }
 
 /* 
  * Remove text-shadow in selection highlight: h5bp.com/i
@@ -42,17 +42,17 @@ body, button, input, select, textarea { font-family: sans-serif; color: #222; }
  * Also: hot pink! (or customize the background color to match your design)
  */
 
-::-moz-selection { background: #fe57a1; color: #fff; text-shadow: none; }
-::selection { background: #fe57a1; color: #fff; text-shadow: none; }
+::-moz-selection { background: #6568C7; color: #B9B4BF; text-shadow: none; }
+::selection { background: #6568C7; color: #B9B4BF; text-shadow: none; }
 
 
 /* =============================================================================
    Links
    ========================================================================== */
 
-a { color: #00e; }
-a:visited { color: #551a8b; }
-a:hover { color: #06e; }
+a { color: #461D4B; font-weight: bold;}
+a:visited { color: #39343C; font-weight: bold;}
+a:hover { color: #642226; font-weight: bold;}
 a:focus { outline: thin dotted; }
 
 /* Improve readability when focused and hovered in all browsers: h5bp.com/h */
@@ -71,7 +71,7 @@ blockquote { margin: 1em 40px; }
 
 dfn { font-style: italic; }
 
-hr { display: block; height: 1px; border: 0; border-top: 1px solid #ccc; margin: 1em 0; padding: 0; }
+hr { display: block; height: 2px; border: 0; border-top: 2px solid #642226; margin: 3em 0 5em; padding: 0; }
 
 ins { background: #ff9; color: #000; text-decoration: none; }
 
@@ -98,7 +98,7 @@ sub { bottom: -0.25em; }
    Lists
    ========================================================================== */
 
-ul, ol { margin: 1em 0; padding: 0 0 0 40px; }
+ul, ol { margin: 1em 0; padding: 0 0 0 0; }
 dd { margin: 0 0 0 40px; }
 nav ul, nav ol { list-style: none; list-style-image: none; margin: 0; padding: 0; }
 
@@ -212,19 +212,51 @@ td { vertical-align: top; }
    ========================================================================== */
 
 
+html,
 body {
-	margin: 0 auto;
+	margin:0;
+   	padding:0;
+   	height:100%;
+	background-color: #555734;
+	font-size: 1em;
+}
+div {
+	display: block;
+	white-space: break-word;
+}
+
+h1,h2,h3,h4,h5,h6 {
+	color: #2F2F2F;
+}
+h1 a {
+	text-decoration: none;
+}
+
+
+#wrapper {
+	min-height:100%;
+	position:relative;
+	padding-left: 0px;
+	background-color: #596861;
+	width: 960px;
 }
 
 header {
 	margin: 0 auto;
-	height: 70px;
-	background-color: 100px;
-	border: thin solid red;
+	padding: 0;
+	height: 40px;
+	background-color: #555734;
 }
 
-h1{
-	font-size:30px;
+header > h1 {
+	margin: 0 0 0 20px;
+}
+header a {
+	text-decoration: none;
+}
+
+#paginatedol {
+	list-style-type: none;
 }
 
 .pagination {
@@ -232,22 +264,42 @@ h1{
 }
 
 #content {
-	margin: 0 40px;
-	width: 100%;
-}
-article {
-	width: 450px;
-}
-#rightcolumn {
-	width: 100px;
-	border: thin solid red;
-	float: right;
+	margin: 0;
+	padding-top: 10px;
+	padding-left: 80px;
+	padding-right: 0;
+   	padding-bottom:60px;   /* Height of the footer */
+	max-width:960px;
+	overflow:auto;
+	
 }
 
+article {
+	padding: 0;
+	margin: 0;
+	width: 600px;
+	float: left;
+}
+#rightcolumn {
+	width: 200px;
+	float: left;
+	margin: 120px 0 0 40px;
+	padding: 0;
+	background-color: #45504A;
+/*	border: thin solid #730000;*/
+}
+
+
 footer {
-	height:100px;
-	background-color: blue;
-	border: thin solid red;	
+	position:absolute;
+	bottom:0;
+	width:100%;
+	height:60px;   /* Height of the footer */
+	background:#6cf;
+	background-color: #555734;
+}
+footer p {
+	margin-left: 40px;
 }
 
 
