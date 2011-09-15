@@ -251,6 +251,11 @@ header {
 	height: 40px;
 	background-color: #555734;
 }
+header img {
+	margin: 0;
+	padding: 0;
+}
+
 
 header > h1 {
 	margin: 0 0 0 20px;
@@ -269,6 +274,7 @@ header a {
 
 #content {
 	margin: 0;
+	border-left: 8px solid #64383D;
 	padding-top: 10px;
 	padding-left: 80px;
 	padding-right: 0;
@@ -283,6 +289,10 @@ article {
 	margin: 0;
 	width: 600px;
 	float: left;
+}
+article p {
+	margin: 0 0 0.4em 0;
+	padding: 0;
 }
 #rightcolumn {
 	width: 200px;
@@ -316,8 +326,6 @@ footer p {
 	text-align: right;
 	color: #2F2F2F;
 }
-
-
 
 
 
