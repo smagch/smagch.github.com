@@ -2,14 +2,13 @@
 layout: post
 title: Test2
 ---
+{% highlight ruby %}
+def foo
+  puts 'foo'
+end
+{% endhighlight %}
 
-foobar foo bar foobar foo barfoobar foo barfoobar foo barfoobar foo barfoobar foo barfoobar foo barfoobar foo barfoobar foo bar
 
-foobar foo bar foobar foo bar foobar foo bar
-foobar foo bar foobar foo bar foobar foo bar
-foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar
-foobar foo bar foobar foo bar foobar foo bar
-foobar foo bar foobar foo bar foobar foo bar
 foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar foobar foo bar
 foobar foo bar foobar foo bar foobar foo bar
 foobar foo bar foobar foo bar foobar foo bar
