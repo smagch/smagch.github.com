@@ -11,49 +11,56 @@ body {
 	color: white;
 	font-family: 'Lucida Grande', Verdana, Arial;
 	font-size: 12px;
-	background-image: -webkit-gradient(radial,
-                        50% 500, 1,
-                        50% 500, 400,
-                        from(rgba(255, 255, 255, 0.3)),
-                        to(rgba(255, 255, 255, 0)));
 	background-repeat: no-repeat;
 }
-
-#discription {
+p#msg {
+	display: block;
 	position: absolute;
 }
-#stage {
-    margin: 0;
-    width: 0;
-    height: 0;
-    -webkit-perspective: 800;
-	-webkit-transform-style: preserve-3d;
-}
-#world {
-	margin: 0;
-	position: absolute;
-	-webkit-transform-style: preserve-3d;
-}
-.box {
-	margin: 0 ;
-	position: absolute;
-	-webkit-transform-style: preserve-3d;
-}
-.plane {
-	margin: 0 ;
-	position: absolute;
-	background-color:blue;
-	opacity: 0.6;
-	border: thin solid red;
-    -webkit-transform-style: flat;
-	-webkit-backface-visibility: hidden;
-}
-.plane:hover {
-	opacity: 1;
+@media all and (-webkit-transform-3d) {
+	p#msg {
+		display: none;
+	}
+	
+	body {
+		background-image: -webkit-gradient(radial,
+	                        50% 500, 1,
+	                        50% 500, 400,
+	                        from(rgba(255, 255, 255, 0.3)),
+	                        to(rgba(255, 255, 255, 0)));
+	}
+	#stage {
+	    margin: 0;
+	    width: 0;
+	    height: 0;
+	    -webkit-perspective: 800;
+		-webkit-transform-style: preserve-3d;
+	}
+	#world {
+		margin: 0;
+		position: absolute;
+		-webkit-transform-style: preserve-3d;
+	}
+	.box {
+		margin: 0 ;
+		position: absolute;
+		-webkit-transform-style: preserve-3d;
+	}
+	.plane {
+		margin: 0 ;
+		position: absolute;
+		background-color:blue;
+		opacity: 0.6;
+		border: thin solid red;
+	    -webkit-transform-style: flat;
+		-webkit-backface-visibility: hidden;
+	}
+	.plane:hover {
+		opacity: 1;
+	}
 }
   </style>
   <script>
-	
 	// requestAnim shim layer by Paul Irish
 	window.requestAnimFrame = (function(){
 		return  window.requestAnimationFrame       || 
@@ -166,30 +173,43 @@ body {
 		return handler;
 	})();
 	
+	var isIFrame = ( parent.frames.length > 0 );
 	
-	
-	window.onload = function(){
-		console.log('onload');
+	window.onload =  function(){
+		var msg = document.getElementById('msg');
+		if(msg.style.display == 'none') {
+			return;
+		}
+		
 		Util.createBigBox(3, 'world', 40, 30);
 		var handler = new Handler('world');
 		
-		(function animloop() {
-		      handler.update();
-		      requestAnimFrame(animloop);
-		})();
+		if(isIFrame) {
+			msg.innerHTML = '<a href="#">full screen</a></div>';
+			msg.addEventListener('click', function(e){
+				window.parent.location.href = window.location.href;
+			},false);
+			msg.style.display = 'block';
+			
+			(function animloop() {
+				handler.update();
+				handler.resize();
+			    requestAnimFrame(animloop);
+			})();
+		} else {
+			(function animloop() {
+				handler.update();
+			    requestAnimFrame(animloop);
+			})();
+		}
+		
+		
 	};
 	
   </script>
 </head>
 <body>
-	<div id='discription'>
-		<h1>CSS3 3D transfrom, mouse animation with centering demo</h1>
-	</div>
-	
-	
-
-	
-	
+	<p id='msg'>the browser has no css3 3d transform support</p>
 	<div id='stage'>
 		<div id='world'>
 		</div>
