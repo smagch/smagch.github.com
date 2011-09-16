@@ -85,8 +85,7 @@ p#msg {
 			
 					
 		return {
-			createBox : function(size, parentId) { // width = height = size;
-				var parent = document.getElementById(parentId);
+			createBox : function(size, parentNode) { // width = height = size;
 				var box = document.createElement('div');
 				box.className = 'box';
 				
@@ -99,26 +98,27 @@ p#msg {
 					div.style.webkitTransform = m.translate(0,0,size/2);
 					box.appendChild(div);
 				}
-				
-				parent.appendChild(box);
+				parentNode.appendChild(box);
 				return box;
 			},
 			createBigBox : function( cubeNum, parentId, cubeSize, span ) {
+				var parentNode = document.getElementById(parentId);
+				var docFragment = document.createDocumentFragment();
+				
 				var size = cubeSize + span;
 				var offset = (size * cubeNum - span) * -0.5;
 				var offsetZ = -size * (cubeNum - 1) * 0.5;
 				for(var i = 0; i < cubeNum; i++ ) {
 					for(var j = 0; j < cubeNum; j++) {
 						for(var k = 0; k < cubeNum; k++) {
-							var box = Util.createBox(cubeSize, parentId );
+							var box = Util.createBox(cubeSize, docFragment );
 							box.style.webkitTransform = 'translateX(' + ( offset + size * i ) + 'px) ' + 
 														'translateY(' + ( offset + size * j ) + 'px) ' + 
 														'translateZ(' + ( offsetZ + size * k ) + 'px)';
 						}
 					}
 				}
-				
-				
+				parentNode.appendChild(docFragment);
 			}
 		};
 	})();
