@@ -1,5 +1,7 @@
 _site/
 _drafts/
 *.tmproj
-_test/
+test/
 test*
+*.DS_Store
+
