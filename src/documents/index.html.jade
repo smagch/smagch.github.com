@@ -1,0 +1,18 @@
+---
+layout: default
+title: Home
+hoge: foobar
+---
+
+for document in documents
+  var keys = 'title url fullPath relativePath extensions tags relatedDocuments date basename extension extensionRendered filename slug id layout'.splits(' ')  
+  p title #{document.title}
+  p relativePath #{document.relativePath}
+  p ex #{document.extensions}
+  p tags #{document.tags}
+  p date #{document.date}
+  p basename #{document.basename}
+  p filename #{document.filename}
+  p id #{document.id}
+  p exR #{document.extensionRendered}
+  p slug #{document.slug}

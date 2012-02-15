@@ -1,46 +1,40 @@
 html
-head
-  // TODO modernizr
-  meta(http-equiv='content-type', content='text/html; charset=utf-8')
-  meta(name='viewport', content='width=device-width', minimum-scale=1.0, maximum-scale=1.0)
-  title {{ page.title }}
-  link(rel='stylesheet', href='/css/style.css', type='text/css')
-  link(rel='stylesheet', href='/css/syntax.css', type='text/css')
+  head
+    meta(http-equiv='content-type', content='text/html; charset=utf-8')
+    meta(name='viewport', content='width=device-width', minimum-scale=1.0, maximum-scale=1.0)
+    title #{document.title}
+    link(rel='stylesheet', href='/styles/home.css', type='text/css')
+    link(rel='stylesheet', href='/styles/syntax.css', type='text/css')
+  body
+    #wrapper
+      header
+        h1
+          a( href='/') UI things considered
+      #content
+        article
+          !{content}
+        #rightcolumn
+          h2 about this blog
+          p Hi there, This blog is on behalf of IT engineering, focusing on front-end topic.
+          p 
+            | After experience of Java, ActionScript3, Flex and little bit of Android development, 
+            | I got deep into javascript and HTML5.
+          p If you have any comments, complaints or quips on the posts, do drop me a line.
 
-body
-  #wrapper
-  header
-    h1
-      a( href='/') UI things considered
-  #content
-    article
-      {{ content }}    
-    #rightcolumn
-      h2 about this blog
-      p Hi there, This blog is on behalf of IT engineering, focusing on front-end topic.
-      p 
-        | After experience of Java, ActionScript3, Flex and little bit of Android development, 
-        | I got deep into javascript and HTML5.
-      p If you have any comments, complaints or quips on the posts, do drop me a line.
+          p For more of my details, please click 
+            a(href='/about.html') here
 
-      p For more of my details, please click 
-        a(href='/about.html') here
+        a(href='http://github.com/smagch')
+          img(style="position: absolute; top: 40px; right: 0; border: 0;", src='https://a248.e.akamai.net/assets.github.com/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67", alt="Fork me on GitHub">')      
+      footer
+        p &copy;2011 &ndash; shimaguchi tomoya
+      script
+        var _gaq = _gaq || [];
+        _gaq.push(['_setAccount', 'UA-25646251-1']);
+        _gaq.push(['_trackPageview']);
 
-    a(href='http://github.com/smagch')
-      img(style="position: absolute; top: 40px; right: 0; border: 0;", src='https://a248.e.akamai.net/assets.github.com/img/71eeaab9d563c2b3c590319b398dd35683265e85/687474703a2f2f73332e616d617a6f6e6177732e636f6d2f6769746875622f726962626f6e732f666f726b6d655f72696768745f677261795f3664366436642e706e67", alt="Fork me on GitHub">')      
-  footer
-    p &copy;2011 &ndash; shimaguchi tomoya
-
-script
-  var _gaq = _gaq || [];
-  _gaq.push(['_setAccount', 'UA-25646251-1']);
-  _gaq.push(['_trackPageview']);
-
-  (function() {
-    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
-    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
-    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
-  })();
-
-</body>
-</html>
+        (function() {
+          var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+          ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+          var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+        })();
