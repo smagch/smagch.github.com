@@ -1,7 +1,2 @@
-_site/
-_drafts/
-*.tmproj
-test/
-test*
 *.DS_Store
-
+node_modules
