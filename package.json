@@ -1,0 +1,16 @@
+{
+  "name": "hoshidori",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "express": "3.0.0beta4",
+    "jade": "~0.26",
+    "stylus": "~0.28",
+    "nib": "~0.7",
+    "debug": "~0.7",
+    "glob": "3.x",
+    "moment": "~1.6",
+    "marked": "~0.2",
+    "mocha": "~1.3"
+  }
+}
