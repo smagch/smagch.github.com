@@ -5,29 +5,25 @@ html
       link(rel='stylesheet', href='/stylesheets/home.css')
   body
     #wrapper
-      header
+      header#main-header
         h1
           a(href="/") UI things considered
-      #content
-        block content
+      #container
+        nav
+          ul
+            li
+              a(href='/') twitter
+            li
+              a(href='/') about
+            li
+              a(href='/') github
+        #content
+          block content
 
-        #rightcolumn
-          h2 about this blog
-          p.
-            Hi there, This blog is on behalf of IT engineering, focusing on front-end topic.
-          p.
-            After experience of Java, ActionScript3, Flex and little bit of Android development, 
-            I got deep into javascript and HTML5.</p>
-          p.
-            If you have any comments, complaints or quips on the posts, do drop me a line.
-          p.
-            For more of my details, please click <a href='/about.html'>here</a>.
-
-      include ./fixtures/ribbon.html
-
-      footer
+      //- include ./fixtures/ribbon.html
+      footer#main-footer
         p
-          &copy;2011 &ndash; shimaguchi tomoya
+          &copy;2012 &ndash; shimaguchi tomoya
 
       //- include ./fixtures/ga.html
     

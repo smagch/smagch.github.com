@@ -14,12 +14,19 @@ app.set('views', __dirname + '/views');
 app.set('view engine', 'jade');
 app.use(require('./utils/stylus'));
 app.use(express.bodyParser());
-app.use(express.methodOverride());
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
+/**
+ * view locals
+ */
 
-// Routes
+app.locals(require('./utils/locals'));
+
+/**
+ * Router
+ */
+
 app.get('/', function (req, res) {
   res.render('home');
 });

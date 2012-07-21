@@ -4,5 +4,13 @@ block append head
   title #{title}
 
 block content
-  p date is #{date}
-  article!= content
+  article
+    header.clearfix
+      h1 #{title}
+      p.meta
+        time(datetime='#{moment(date).format("YYYY-MM-DD")}', pubdate)
+          | #{moment(date).format('LLL')}
+    div!= content
+    footer
+      p footer
+      //- TODO disqus

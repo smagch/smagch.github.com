@@ -3,7 +3,25 @@ var path = require('path')
   , moment = require('moment')
   , fs = require('fs')
   , marked = require('marked')
+  , hljs = require('highlight.js')
   , postFormat = /\d{4}\-\d{2}\-\d{2}\-(.*)\.md/;
+
+/**
+ * enable hightlighting
+ */
+
+marked.setOptions({
+  gfm: true
+, pedantic: false
+, sanitize: false
+, highlight: function (code, lang) {
+    if (lang) {
+      return hljs.highlight(lang, code).value;
+    }
+
+    return hljs.highlightAuto(code).value;
+  }
+});
 
 /**
  * glob options
