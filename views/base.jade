@@ -9,14 +9,20 @@ html
         h1
           a(href="/") UI things considered
       #container
-        nav
+        nav.nav-list
           ul
             li
-              a(href='/') twitter
+              a(href='/') home
             li
-              a(href='/') about
+              a(href='/about/') about
             li
-              a(href='/') github
+              a(href='/blog/') blog
+
+            li.nav-header links
+            li
+              a(href='https://twitter.com/smagch') twitter
+            li
+              a(href='https://github.com/smagch') github
         #content
           block content
 

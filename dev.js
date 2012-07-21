@@ -6,7 +6,7 @@
 var express = require('express')
   , http = require('http')
   , app = express()
-  , blogMiddleware = require('./utils/blog');
+  , blog = require('./utils/blog');
 
 // Configuration
 
@@ -31,10 +31,21 @@ app.get('/', function (req, res) {
   res.render('home');
 });
 
+app.get('*/', function (req, res, next) {
+  var url = req.url;
+  res.render(url.substr(1) + 'index')
+});
+
+app.get('*/index.html', function (req, res, next) {
+
+  var match = /^\/(.+)\.html$/.exec(req.url);
+  res.render(match[1]);
+});
+
 app.get('/blog/:postId', function (req, res, next) {
   var name = req.params.postId;
-  console.log('id : ' + name);
-  blogMiddleware(name, function (err, doc) {
+  console.log('name : ' + name);
+  blog(name, function (err, doc) {
     if (err) return next(err);
     res.locals(doc);
     res.render('blog/post');
