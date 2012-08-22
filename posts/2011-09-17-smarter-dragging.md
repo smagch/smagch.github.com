@@ -33,5 +33,7 @@ window.onmousemove = function () {
 
 I'm going to put here a test app for dragging and animation. It won't work with IE since IE have yet to implement CSS transitions.
 
+<iframe src="/demo/drag-demo.html" id='iframe' scrolling="no" style="height: 400px" ></iframe>
+
 I found javascript quite cool and productive in so far as application is tiny like this.
 

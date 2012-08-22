@@ -2,10 +2,7 @@ article
   header.clearfix
     h1
       a(href='/blog/#{post.name}') #{post.title}
-
     p.meta
       time(datetime='#{moment(post.date).format("YYYY-MM-DD")}', pubdate)
         | #{moment(post.date).format('MMM Do YYYY')}
   div!= post.content
-  footer
-    p footer

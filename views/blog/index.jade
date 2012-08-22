@@ -5,5 +5,13 @@ block append head
   title blog
 
 block content
-  each post in posts
-    include ./fixtures/article
+  article
+    header
+      h1 Posts
+    each postGroup, yearMonth in posts
+      h3.center #{yearMonth}
+      each post in postGroup
+        ul.items
+          li
+            a(href='/posts/#{post.date}/#{post.name}') #{post.title}
+            time(date='#{post.date}') #{post.datetime}
