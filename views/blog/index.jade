@@ -1,5 +1,9 @@
 extends ../base
 //- TODO paginator
 
-block appedn head
+block append head
   title blog
+
+block content
+  each post in posts
+    include ./fixtures/article

@@ -1,16 +1,7 @@
 extends ../base
 
 block append head
-  title #{title}
+  title #{post.title}
 
 block content
-  article
-    header.clearfix
-      h1 #{title}
-      p.meta
-        time(datetime='#{moment(date).format("YYYY-MM-DD")}', pubdate)
-          | #{moment(date).format('MMM Do YYYY')}
-    div!= content
-    footer
-      p footer
-      //- TODO disqus
+  include ./fixtures/article

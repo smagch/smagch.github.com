@@ -3,15 +3,9 @@ body
   margin: 0
   padding: 0
   height: 100%
-  //- background-color: #555734
-  font-size: 16px
+  font-size: 14px
   color: #2E2E2E
   background: $BACK
-
-//- div
-//-  display: block
-//- white-space: break-word
-
 
 h1
 h2
@@ -26,6 +20,9 @@ h1 a
 
 h2 a
   text-decoration: none
+
+section
+  margin: 10px auto
 
 
 #wrapper
@@ -58,7 +55,12 @@ h2 a
   bottom: 0
   width: 100%
   height: $F_H
+  line-height: $F_H
   background: $BACK
+  text-align: right
+  color: #2F2F2F
+  span
+    margin-right: 10px
 
 nav
   background: $nav_back
@@ -79,13 +81,19 @@ nav
       margin: 0
       padding: 0
       a
+        display: block
         width: 100%
-        height: 30px
-        line-height: 30px
+        padding-left: 10px
+        height: $nav_h
+        line-height: $nav_h
         color: $accent_col
-        font-size: 18px
+        font-size: 14px
+        text-decoration: none
+        vertical-align: middle
+        &:hover
+          background: lighten($nav_back, 6%)
         &:visited
-          color: $accent_col
+          color: @color
 
 
 article
@@ -114,7 +122,6 @@ article
     overflow: hidden
   //- float: left
 
-footer p
-  text-align: right
-  color: #2F2F2F
+
+
 
