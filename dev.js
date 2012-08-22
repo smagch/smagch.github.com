@@ -115,15 +115,7 @@ app.get('/', function (req, res) {
 
 app.get('/posts/:postDate/:postId', function (req, res, next) {
   var name = req.params.postId;
-  console.log('name : ' + name);
-  // Pagin.findOnly(name, function (err, doc) {
-  //   if (err) return next(err);
-  //   res.locals({
-  //     post: doc
-  //   });
-  //   console.log('render /blog/:postId');
-  //   res.render('blog/post');
-  // });
+
   Pagin
     .findOnly(name)
     //.siblings()
@@ -132,17 +124,7 @@ app.get('/posts/:postDate/:postId', function (req, res, next) {
       res.locals({
         post: doc
       });
-      console.log('render /blog/:postId');
-      // res.locals.use(blogList)
-      // res.locals.use(siblings(name, 3))
-      // res.locals.use(findOnly(name))
 
-      // let's load blog list of the same year
-      // 2010
-      //   title1
-      //   title2 * selected
-      //   title3
-      // 2011
       res.render('blog/post');
     });
 
@@ -150,7 +132,7 @@ app.get('/posts/:postDate/:postId', function (req, res, next) {
 
 app.get('*/', function (req, res, next) {
   var url = req.url;
-  res.render(url.substr(1) + 'index')
+  res.render(url.substr(1) + 'index');
 });
 
 // app.get('/blog/:postYear/:postMonth', function (req, res, next) {
