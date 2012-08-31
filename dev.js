@@ -84,8 +84,6 @@ Fsquery('./posts')
 
 */
 app.get('/', function (req, res, next) {
-  console.log('GET /');
-
   fsQuery('posts').children()
   .map(blog.parseTitle)
   .sortBy(function (file) {
@@ -98,14 +96,12 @@ app.get('/', function (req, res, next) {
     post.datetime = d.format('MMM Do YYYY');
     return post;
   })
-  .get(function (err, results) {
+  .groupBy('yearMonth')
+  .get(function (err, posts) {
     if (err) return next(err);
-    var posts = _.groupBy(results, 'yearMonth');
-
     res.locals({
       posts: posts
     });
-
     res.render('blog');
   });
 });
