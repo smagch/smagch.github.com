@@ -1,4 +1,3 @@
-
 /**
  * Module dependencies.
  */
@@ -44,21 +43,14 @@ app.use(stylus.middleware({
  */
 
 app.locals(require('./utils/locals'));
-
-/**
- *
- */
-
-//app.use(express.bodyParser());
 app.use(app.router);
 app.use(express.static(__dirname + '/public'));
 
 /**
- * Router
+ * Routers
  */
 
 app.get('*/index.html', function (req, res, next) {
-
   var match = /^\/(.+)\.html$/.exec(req.url);
   res.render(match[1]);
 });
@@ -67,22 +59,10 @@ app.get('*/index.html', function (req, res, next) {
 * show latest post
 */
 
-/*
-
-Fsquery('./posts')
-  .children(':file')
-  .sort()
-  .each(function () {
-    var d = moment(this.date);
-    this.yearMonth = ...
-    this.datetime = ...
-  })
-  .get(function (err, results) {
-    
-  })
 
 
-*/
+
+
 app.get('/', function (req, res, next) {
   fsQuery('posts').children()
   .map(blog.parseTitle)
@@ -99,90 +79,18 @@ app.get('/', function (req, res, next) {
   .groupBy('yearMonth')
   .get(function (err, posts) {
     if (err) return next(err);
-    res.locals({
-      posts: posts
-    });
-    res.render('blog');
+    res.render('blog', { posts: posts });
   });
 });
-
-// app.get('/blog/:postDate', function (req, res, next) {
-//   var postDate = req.params.postDate;
-//   console.log('postDate : ' + postDate);
-//   
-//   Pagin.find({date: postDate}, function (err, results) {
-//     if (err) return next(err);
-//     // if date search not found, then move to `/blog/:postId`
-//     if (!results.length) return next();
-// 
-//     res.locals({
-//       posts: results
-//     });
-//     res.render('blog');
-//   });
-// });
 
 /**
  * show post
  */
 
-/*
-
-var options = {};
-// default is fs.readFile
-
-options.parse = function (err, done) {
-  // this = '2011-10-11-hoge.md'
-  // filename, dirname, extname
-  done(null, {
-    title: 
-    date: 
-    filename: 
-  });
-};
-
-options.comparator = function () {
-  return this.date;
-};
-
-var FsQuery = fsQuery(options);
-
-// use glob
-
-FsQuery
-  .find(name)
-  // .siblings().end()
-  .prev(function () {
-    this.parent().prev = this
-  })
-  .end()
-  .read(function (err, content, done) {
-    if (err) done(err);
-    this.content = content;
-    done(err, this);
-  })
-  .get(function (err, content) {
-    if (err) throw err;
-    [{
-      title: 'hoge'
-      date: '2011-10-11,
-      content: 'fdsaffdsafkljadsfkjdsa',
-      prev: {
-        title: 'fdsa',
-        date: '2011-10-10
-      },
-      next: {
-        title: 'fdsaf',
-        date: '2011-
-      }
-    }]
-  });
-
-*/
-
 app.get('/posts/:postDate/:postId', function (req, res, next) {
   var name = req.params.postId;
   var date = req.params.postDate;
+
   fsQuery('posts').children(date + '-' + name + '*')
   .map(blog.parseTitle)
   .map(function (file, done) {
@@ -205,23 +113,6 @@ app.get('*/', function (req, res, next) {
   var url = req.url;
   res.render(url.substr(1) + 'index');
 });
-
-// app.get('/blog/:postYear/:postMonth', function (req, res, next) {
-//   var year = req.params.postYear
-//     , month = req.params.postMonth;
-//
-//   Pagin.find({date: year + '-' + month}, function (err, results) {
-//     if (err) return next(err);
-//     if (!results.length) return next();
-//
-//     res.locals({
-//       posts: results
-//     });
-//     res.render('blog/index');
-//   });
-// });
-
-//app.get('/blog/:postYear/:postMonth', function (req, res, next) {})
 
 http.createServer(app).listen(3000, function () {
   console.log('server start');
