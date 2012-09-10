@@ -1,7 +1,7 @@
 article
   header.clearfix
     h1
-      a(href='/posts/#{post.date}/#{post.name}') #{post.title}
+      a(href='/posts/#{post.date}/#{post.name}/') #{post.title}
     p.meta
       time(datetime='#{moment(post.date).format("YYYY-MM-DD")}', pubdate)
         | #{moment(post.date).format('MMM Do YYYY')}
