@@ -13,5 +13,5 @@ block content
       each post in postGroup
         ul.items
           li
-            a(href='/posts/#{post.date}/#{post.name}') #{post.title}
+            a(href='/posts/#{post.date}/#{post.name}/') #{post.title}
             time(date='#{post.date}') #{post.datetime}
