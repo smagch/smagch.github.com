@@ -16,7 +16,8 @@
     "highlight.js": "7.x",
     "underscore": "~1.3",
     "async": "~0.1",
-    "fsquery": "https://github.com/smagch/fsquery/tarball/master"
+    "fsquery": "https://github.com/smagch/fsquery/tarball/master",
+    "miniget": "https://github.com/smagch/miniget/tarball/master"
   },
   "scripts": {
     "start": "node dev.js",
