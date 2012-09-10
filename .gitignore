@@ -1,5 +1,1 @@
-_site/
-_drafts/
-*.tmproj
-_test/
-test*
+node_modules
