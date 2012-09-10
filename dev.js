@@ -51,8 +51,15 @@ app.use(express.static(__dirname + '/public'));
  */
 
 app.get('*/index.html', function (req, res, next) {
-  var match = /^\/(.+)\.html$/.exec(req.url);
-  res.render(match[1]);
+  var match = /(.*)index.html$/.exec(req.url);
+  console.log('match[1] : ' + match[1]);
+  http.get({
+    port: 3000,
+    host: 'localhost',
+    path: match[1]
+  }, function (_res) {
+    _res.pipe(res);
+  });
 });
 
 /**
