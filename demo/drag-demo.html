@@ -1,0 +1,313 @@
+<html lang="en">
+<head>
+	<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+	<title>drag test</title>
+	<style>
+		body, div {
+			display: block;
+			position: relative;
+			margin : 0;
+			padding: 0;
+			color: #BFBFBF;
+		}
+		a {
+			margin: 10px;
+		}
+		body {
+	      	background-color: black;
+			overflow: hidden;
+			width: 100%;
+			height: 100%;
+	    }
+		#container {
+			background-color: yellow;
+		}
+		.plane {
+            background-color:#e0f0e0;
+			position: absolute;
+			color: blue;
+		}
+		.plane:hover {
+			opacity: 0.8;
+			cursor: move;
+		}
+		.anim {
+			-webkit-transition-property: left top;
+			-webkit-transition-duration: 0.3s;
+			-moz-transition-property: left top;
+			-moz-transition-duration: 0.3s;
+			-o-transition-property: left top;
+			-o-transition-duration: 0.3s;
+		}
+	
+	  </style>
+		
+		
+	
+		
+	<script>
+	window.requestAnimationFrame = (function(){
+		return  window.requestAnimationFrame       || 
+	            window.webkitRequestAnimationFrame || 
+	            window.mozRequestAnimationFrame    || 
+	            window.oRequestAnimationFrame      || 
+	            window.msRequestAnimationFrame     || 
+	            function(/* function */ callback, /* DOMElement */ element){
+	            	window.setTimeout(callback, 1000 / 60);
+	            };
+	})();
+	
+	window.Util = (function() {
+		
+		const TRANSITION_EVENT_TYPE = (function() {
+		 	return 	window.WebKitTransitionEvent ? 'webkitTransitionEnd' : 
+					window.TransitionEvent ? 'transitionend' : 
+					window.opera ? 'oTransitionEnd' :
+					undefined;
+		})();
+		if(!TRANSITION_EVENT_TYPE) {
+			throw new Error('TRANSITION_EVENT_TYPE is not defined');
+		}
+		
+		var divs = [ ],
+			span = 0,
+			numX = 0,
+			numY = 0;
+			
+		function setLayoutByIndex(element, index) {
+			element.style.left = span * (index % numX);
+			element.style.top = span * Math.floor(index/numX);
+		};
+		
+		return {
+			
+			getIndexByPoint : function(x, y){
+				var posX = Math.round(x / span);
+				var posY = Math.round(y / span);
+				return posX + posY * numX;
+				//return Math.round(x / span);
+			},
+			
+			createPlane : function( size, parentNode) {
+
+				var div = document.createElement('div');
+				div.className = 'plane';
+				div.style.width = size;
+				div.style.height = size;
+				
+				parentNode.appendChild(div);
+				return div;
+			},
+			
+			createTile : function( xNum, yNum, tileSize, space, parent) {
+				if(typeof parent === 'string') {
+					parent = document.getElementById(parent);
+				}
+				
+				var docFrag = document.createDocumentFragment();
+				span = tileSize + space;
+				numX = xNum;
+				numY = yNum;
+				
+				for(var i = 0, limit = numX * numY; i < limit ; i++) {
+					
+					var div = Util.createPlane(tileSize, docFrag);
+
+					divs[i] = div;
+					div.dataset.index = i;
+					
+					div.style.backgroundColor = '#'+(Math.random()*0xFFFFFF>>0).toString(16);
+					setLayoutByIndex(div, i);
+				}
+				parent.appendChild(docFrag);
+			},
+			
+			isOutOfBounds : function(index) {
+				var total = numX * numY;
+				return (index < 0  || index >= total ) ;
+			},
+			
+			shiftElements: function(oldIndex, destIndex){
+				var min, max, sign;
+				if(oldIndex < destIndex) {
+					min = oldIndex + 1;
+					max = destIndex;
+					sign = -1;
+				} else {
+					min = destIndex;
+					max = oldIndex - 1;
+					sign = 1;
+				}
+				
+				var targets = divs.filter(function(el){
+					var index = parseInt(el.dataset.index);
+					return !(index < min || index > max);
+				});
+				
+				targets.map(function(el){
+					var index = parseInt(el.dataset.index);
+					var dest = index + sign;
+					Util.changeIndex(el, dest);
+				});
+			},
+			
+				
+			hasClassName : function(inElement, inClassName) {
+		        var regExp = new RegExp('(?:^|\\s+)' + inClassName + '(?:\\s+|$)');
+		        return regExp.test(inElement.className);
+		    },
+
+		    addClassName : function(inElement, inClassName) {
+		        if (!Util.hasClassName(inElement, inClassName)) {
+		            inElement.className = [inElement.className, inClassName].join(' ');
+				}
+		    },
+
+		    removeClassName : function(inElement, inClassName) {
+		        if (Util.hasClassName(inElement, inClassName)) {
+		            var regExp = new RegExp('(?:^|\\s+)' + inClassName + '(?:\\s+|$)', 'g');
+		            var curClasses = inElement.className;
+		            inElement.className = curClasses.replace(regExp, ' ');
+		        }
+		    },
+		
+			animTo : function(element, index) {
+				Util.addClassName( element, 'anim');
+				
+				setLayoutByIndex(element, index);
+				
+				element.addEventListener( 
+					TRANSITION_EVENT_TYPE, 
+					function endHandler( event ) {
+						element.removeEventListener(TRANSITION_EVENT_TYPE, endHandler, false);
+						Util.removeClassName( element, 'anim');
+						//console.log('==========animetion end!!!!!!=========');
+						//console.log('className : ' + element.className);
+					}, false );
+			},
+			
+			changeIndex : function(element, index ) {	
+				//var destX = span * index;
+				element.dataset.index = index;
+				Util.animTo(element, index);
+				//Util.animTo(element, destX);
+			},
+			
+			returnToPosition : function(element) {
+				var index = element.dataset.index;
+				Util.animTo(element, index);
+			}
+		};
+	})();
+	</script>
+	
+	<script>
+	var isMouseDown = false,
+		draggingElement,
+		offsetX = 0,
+		offsetY = 0,
+		isDirty = false;
+	
+	var moveHandler = function (e) {
+		//console.log('dragging!!!');
+		if(isDirty) {
+			return;
+		}
+		isDirty = true;
+		var x = offsetX + e.clientX,
+			y = offsetY + e.clientY;
+		
+		requestAnimationFrame(function(){
+			draggingElement.style.left = x;
+			draggingElement.style.top = y;
+			
+			isDirty = false;
+		});
+		
+		var destIndex = Util.getIndexByPoint(x, y);
+		
+		if(	!Util.isOutOfBounds(destIndex) &&
+			draggingElement.dataset.index != destIndex) {
+			
+			var oldIndex = parseInt(draggingElement.dataset.index);
+			Util.shiftElements(oldIndex, destIndex);
+			
+			draggingElement.dataset.index = destIndex;
+		}
+		return false;
+	}
+	
+	window.onmousedown = function(e) {
+		var element = e.target;
+		if(Util.hasClassName(element, 'plane')) {
+			isMouseDown = true;			
+			window.onmousemove = moveHandler;
+			offsetX = parseInt(element.style.left) - e.clientX;
+			offsetY = parseInt(element.style.top) - e.clientY;
+			//console.log('down client: ' + offsetX + ', ' + offsetY);
+			draggingElement = element;
+			return false;
+		}else {
+			//console.log('not plane : ' + element.className);
+		}
+	};
+
+	window.onmouseup = function(e) {
+		//console.log('onmouseup!!!');
+		isMouseDown = false;
+		window.onmousemove = undefined;
+		if(!draggingElement) {
+			return;
+		}
+		Util.returnToPosition(draggingElement);
+		draggingElement = undefined;
+	};
+	
+	
+	
+	window.onload = function () {
+		function init() {
+			var w = window.innerWidth,
+				h = window.innerHeight - container.offsetTop,
+				
+				TILE_SIZE = 50,
+				SPACE = 10,
+				SPAN = TILE_SIZE + SPACE,
+				numX = Math.floor( w / SPAN),
+				numY = Math.floor( h / SPAN),
+				diffX = w - (SPAN * numX - SPACE),
+				diffY = h - (SPAN * numY - SPACE);
+				
+			container.style.top = diffY / 2;
+			container.style.left = diffX / 2;
+			Util.createTile(numX, numY,	TILE_SIZE,	SPACE, container);
+		}
+		
+		
+		var msg = document.getElementById('msg'),
+			isIFrame = ( parent.frames.length > 0 ),
+			container = document.getElementById('container');
+			
+		if(isIFrame) {
+			msg.addEventListener('click', function(e){
+				window.parent.location.href = window.location.href;
+			},false);
+
+			window.setTimeout(function(){
+				init();
+			}, 1000);
+		} else {
+			msg.style.display = 'none';
+			init();
+		}
+		
+	}
+	
+	</script>
+	
+</head>
+<body>
+	<a id='msg' href='#'>for full screen, click here</a>
+	<div id='container'></div>
+</body>
+</html>

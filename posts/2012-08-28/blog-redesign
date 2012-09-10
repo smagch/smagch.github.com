@@ -1,0 +1,21 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"/><meta name="description" content="about smagch"/><meta name="viewport" content="width=device-width"/><meta name="author" content="smagch"/><meta name="keywords" content="Node.js,javascript"/><link rel="stylesheet" href="/stylesheets/home.css"/><script src="/javascripts/modernizr.min.js"></script><title>blog redesign</title></head><body><div id="wrapper"><header id="main-header"><h1><a href="/">All JS stuff considered</a></h1></header><div id="container"><nav><ul><li><a href="/about/">About</a></li><li><a href="/">Posts</a></li><li><a href="https://twitter.com/smagch">twitter</a></li><li><a href="https://github.com/smagch">github</a></li></ul></nav><div id="content"><article><header class="clearfix"><h1><a href="/posts/2012-08-28/blog-redesign">blog redesign</a></h1><p class="meta"><time datetime="2012-08-28" pubdate="pubdate">Aug 28th 2012</time></p></header><div><p>I redesigned my blog from <a href="https://github.com/mojombo/jekyll">jkeyll</a> to <a href="http://nodejs.org/">Node.js</a>. I use <a href="http://expressjs.com/">express</a>. I just tried to learn Ruby when I created my github blog. But I&#39;ve decided to move on to Node.js since I learned Node.js quite a lot.
+
+</p>
+<p>I researched if there is a nice <a href="http://nodejs.org/">Node.js</a> static site generator for couple of hours.
+I found <a href="https://github.com/logicalparadox/codex">codex</a>. Though it looks pretty nice, I felt quite cumbersome to try a new thing.
+I could compile markdown by Makefile. But that&#39;s painful either.
+
+</p>
+<p>I tried to add a middleware which exec a Makefile with argument. But when I have over hundreds posts, it&#39;ll take a time.
+Next, I came up with a idea that I start a server and <code>wget</code> it. But it doesn&#39;t fail when statusCode isn&#39;t 200. I could write shell scripts. But it really is cumbersome. So I thought it would be nice to have wget-like command line tool which is designed for static site generating. It does...
+
+</p>
+<ol>
+<li>throw error when status code isn&#39;t 200</li>
+<li>It does spidering and detect broken link</li>
+<li>It does parallel file fetching</li>
+</ol>
+<p>The benefit is that I can migrate nicely when I change my mind to deploy it somewhere rather than github pages. I couldn&#39;t find any of these libraries, so I created <a href="https://github.com/smagch/miniget">miniget</a> on my own though I haven&#39;t implemented nice logging and spidering.
+
+</p>
+</div></article></div></div><a href="http://github.com/smagch"><img style="position: absolute; top: 40px; right: 0; border: 0;" src="/images/forkme.png" alt="Fork me on GitHub"></a><footer id="main-footer"><span>&copy;2012 &ndash; Shimaguchi Tomoya</span></footer></div></body></html>
