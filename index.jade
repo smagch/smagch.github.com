@@ -1,0 +1,19 @@
+extends jades/base
+
+block append head
+  title blog
+
+block content
+  article
+    header
+      h1 Posts
+    - var currentMonth = null;
+    each post in posts
+      if post.month !== currentMonth
+        h3.center #{post.month}
+        - currentMonth = post.month
+
+      ul.items
+        li
+          a(href='/posts/#{post.id}.html') #{post.title}
+          time(date='#{post.date}') #{post.datetime}

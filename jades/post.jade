@@ -1,0 +1,13 @@
+extends ../jades/base
+
+block append head
+  title #{post.title}
+
+block content
+  article
+    header.clearfix
+      h1
+        a(href='/posts/#{post.date}/#{post.id}/') #{post.title}
+      p.meta
+        time(datetime='#{post.date}', pubdate) #{post.datetime}
+    div!= post.content
