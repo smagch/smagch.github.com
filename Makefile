@@ -37,10 +37,19 @@ HTML += $(patsubst \
 )
 
 #
+# CSS files to generate
+#
+
+CSS = ./stylesheets/home.css
+CSS_DEPS = $(wildcard ./stylesheets/lib/*.styl) \
+  stylesheets/base.styl \
+  stylesheets/variables.styl
+
+#
 # Build all
 #
 
-all: $(HTML)
+all: $(CSS) $(HTML)
 
 #
 # Update post config when post src directory have changes
@@ -83,10 +92,11 @@ $(POST_DEST)/%.html: $(POST_SRC)/%.md $(POST_CONF)
 # css renderer
 #
 
-%.css: %.styl
-	$(STYLUS) --use $(NIB) --include stylesheets -c < $< > $@
+%.css: %.styl $(CSS_DEPS)
+	@$(STYLUS) --use $(NIB) --include stylesheets -c < $< > $@
+	@echo "css rendered to $@"
 
 clean:
-	@rm $(HTML)
+	@rm $(HTML) $(CSS)
 
 .PHONY: all clean
