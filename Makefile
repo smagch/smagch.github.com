@@ -37,16 +37,19 @@ HTML += $(patsubst \
 )
 
 #
-# build all
+# Build all
 #
 
 all: $(HTML)
 
 #
-# update post config
+# Update post config when post src directory have changes
+#   1. adding a new post
+#   2. changing name
+#   3. removing a post
 #
 
-$(POST_CONF): $(POST_MD)
+$(POST_CONF): $(POST_SRC)
 	$(POST_CONF_RENDERER) --src $(POST_SRC) > $@
 	@echo "post config updated"
 
@@ -68,7 +71,7 @@ $(POST_CONF): $(POST_MD)
 # 3. redirect to target
 #
 
-$(POST_DEST)/%.html: $(POST_SRC)/%.md
+$(POST_DEST)/%.html: $(POST_SRC)/%.md $(POST_CONF)
 	@cat $(POST_CONF) | $(JSON) posts | $(JSON) -c 'filename=="$(notdir $<)"' -o json-0 \
     | $(POST_RENDERER) \
       --template $(POST_TEMPLATE) \
@@ -81,7 +84,7 @@ $(POST_DEST)/%.html: $(POST_SRC)/%.md
 #
 
 %.css: %.styl
-	$(STYLUS) --use $(NIB) --include stylesheets < $< > $@
+	$(STYLUS) --use $(NIB) --include stylesheets -c < $< > $@
 
 clean:
 	@rm $(HTML)
