@@ -1,0 +1,78 @@
+.pull-right
+  float: right
+.pull-left
+  float: left
+
+ul.none
+  margin: 0
+  padding: 0
+  list-style: none
+  &.hlist
+    display: inline
+    li
+      display: inline
+      margin: 0 4px
+
+.toggle-edit
+  .exit
+    display: none
+  &.editing
+    .edit
+      display: none
+    .exit
+      display: block
+
+// preview and publish
+.actions
+  padding: 10px
+  margin: 0
+  background: #5C6A99
+
+.well
+  clearfix()
+  min-height: 20px
+  padding: 19px
+  margin-bottom: 20px
+  background-color: #f5f5f5
+  border: 1px solid #eee
+  border: 1px solid rgba(0,0,0,.05)
+  border-radius: 4px
+  box-shadow: inset 0 1px 1px rgba(0,0,0,.05)
+  blockquote
+    border-color: #ddd;
+    border-color: rgba(0,0,0,.15)
+
+// .form-actions
+//   padding: 20px
+//   border-top: 1px solid hsl(hue($articleBackground), 10%, 80%)
+//   background: hsl(hue($articleBackground), 10%, 90%)
+//   .btn
+//     margin-left: 20px
+.list-actions
+  clearfix()
+  padding: 10px 0
+  li
+    float: right
+    list-style: none
+    padding-left: 20px
+    display: inline-block
+
+.video-container
+  position: relative
+  margin: 6px
+  padding-bottom: 56.25%
+  padding-top: 30px
+  height: 0
+  overflow: hidden
+
+.video-container iframe
+.video-container object
+.video-container embed
+  position: absolute
+  top: 0
+  left: 0
+  width: 100%
+  height: 100%
+
+.img-container img
+  max-width: 100%
