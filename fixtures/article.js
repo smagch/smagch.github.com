@@ -10,10 +10,10 @@ var fs = require('fs')
   , hljs = require('highlight.js')
   , jade = require('jade')
   , argv = require('optimist')
-      .demand(['template', 'src'])
-      .usage('Usage: $0 --template hoge.jade --src ./foo')
+      .demand(['template', 'obj'])
+      .usage("Usage: $0 --template hoge.jade --obj '{foo: 1}'")
       .describe('template', 'jade template for the post')
-      .describe('src', 'markdown source directory for post')
+      .describe('obj', 'local options for template')
       .argv;
 
 /**
@@ -23,6 +23,12 @@ var fs = require('fs')
 var template = jade.compile(fs.readFileSync(argv.template), {
   filename: argv.template
 });
+
+/**
+ * evaluate options
+ */
+
+var options = eval('(' + argv.obj + ')');
 
 /**
  * enable hightlighting
@@ -48,7 +54,7 @@ function renderMarkdown(content) {
 
 /**
  * render jade to target directory
- *   1. evaluate stdin to get options for jade rendering
+ *   1. get markdown from stdin
  *   2. add options `.content` property compiling markdown file
  *   3. stdout rendered html file
  */
@@ -57,11 +63,7 @@ var buf = '';
 process.stdin.setEncoding('utf8');
 process.stdin.on('data', function (chunk) { buf += chunk; });
 process.stdin.on('end', function () {
-  var options = eval('(' + buf + ')');
-  if (Array.isArray(options)) options = options[0];
-  var filepath = path.resolve(argv.src, options.filename);
-  var content = fs.readFileSync(filepath);
-  options.content = renderMarkdown(content);
-  var out = template({ post: options });
-  console.log(out);
+  options.content = renderMarkdown(buf);
+  var html = template({ post: options })
+  process.stdout.write(html);
 }).resume();

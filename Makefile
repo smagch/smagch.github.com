@@ -46,10 +46,28 @@ CSS_DEPS = $(wildcard ./stylesheets/lib/*.styl) \
   stylesheets/variables.styl
 
 #
+# extract post config from list of post config
+#
+
+getlocal = $(shell cat << cat $(POST_CONF) \
+  | $(JSON) posts \
+  | $(JSON) -c 'id=="$(1)"' \
+  | $(JSON) 0 -o json-0 \
+)
+
+#
 # Build all
 #
 
 all: $(CSS) $(HTML)
+
+#
+# html renderer
+#
+
+%.html: %.jade $(POST_CONF)
+	@$(JADE) --path $< --obj $(POST_CONF) < $< > $@
+	@echo "html rendered to $@"
 
 #
 # Update post config when post src directory have changes
@@ -59,34 +77,23 @@ all: $(CSS) $(HTML)
 #
 
 $(POST_CONF): $(POST_SRC)
-	$(POST_CONF_RENDERER) --src $(POST_SRC) > $@
+	@$(POST_CONF_RENDERER) --src $< > $@
 	@echo "post config updated"
 
 #
-# html renderer
-#
-
-%.html: %.jade
-	@$(JADE) --path $< --obj $(POST_CONF) < $< > $@
-	@echo "html rendered to $@"
-
-#
 # html renderer for blog post
-# renderer takes stdin for post config
-# and then output article
-#
-# 1. get one post config out of json config
-# 2. pipe to renderer
-# 3. redirect to target
+# renderer takes
+#   1. --template jade template
+#   2. --obj options
+#   3. stdin to get markdown
+# and then stdout rendered article
 #
 
 $(POST_DEST)/%.html: $(POST_SRC)/%.md $(POST_CONF)
-	@cat $(POST_CONF) | $(JSON) posts | $(JSON) -c 'filename=="$(notdir $<)"' -o json-0 \
-    | $(POST_RENDERER) \
-      --template $(POST_TEMPLATE) \
-      --src $(POST_SRC) \
-    > $@
-	@echo "blog post rendered to $@"
+	@$(POST_RENDERER) --template $(POST_TEMPLATE) \
+     --obj '$(call getlocal,$(basename $(notdir $@)))' \
+     < $< > $@
+	@echo "html rendered to $@"
 
 #
 # css renderer
@@ -96,7 +103,11 @@ $(POST_DEST)/%.html: $(POST_SRC)/%.md $(POST_CONF)
 	@$(STYLUS) --use $(NIB) --include stylesheets -c < $< > $@
 	@echo "css rendered to $@"
 
-clean:
-	@rm $(HTML) $(CSS)
+#
+# remove all generated HTML and CSS
+#
 
-.PHONY: all clean
+clean:
+	@rm $(HTML) $(CSS) $(POST_CONF)
+
+.PHONY: clean
