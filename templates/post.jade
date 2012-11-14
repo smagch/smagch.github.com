@@ -10,4 +10,15 @@ block content
         a(href='/posts/#{post.id}.html') #{post.title}
       p.meta
         time(datetime='#{post.date}', pubdate) #{post.datetime}
-    div!= post.content
+    article!= post.content
+
+block nav
+  ul
+    if post.next
+      li: a(href='/posts/#{post.next}.html') next
+    else
+      li: a.black next
+    if post.prev
+      li: a(href='/posts/#{post.prev}.html') prev
+    else
+      li: a.black prev
