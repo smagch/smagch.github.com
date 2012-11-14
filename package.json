@@ -10,7 +10,8 @@
     "moment": "~1.6",
     "jsontool": "~5.1",
     "highlight.js": "7.x",
-    "optimist": "~0.3"
+    "optimist": "~0.3",
+    "underscore": "~1.4"
   },
   "engines": {
     "node": "0.8.x"
