@@ -16,6 +16,8 @@ JSON = ./node_modules/.bin/json
 HTML = index.html \
        about/index.html
 
+HTML_DEP = ./templates/base.jade
+
 #
 # Blog post config
 #
@@ -72,7 +74,7 @@ atom.xml: $(POST_CONF)
 # html renderer
 #
 
-%.html: %.jade $(POST_CONF)
+%.html: %.jade $(POST_CONF) $(HTML_DEP)
 	@$(JADE) --path $< --obj $(POST_CONF) < $< > $@
 	@echo "html rendered to $@"
 
@@ -96,7 +98,7 @@ $(POST_CONF): $(POST_SRC)
 # and then stdout rendered article
 #
 
-$(POST_DEST)/%.html: $(POST_SRC)/%.md $(POST_CONF)
+$(POST_DEST)/%.html: $(POST_SRC)/%.md $(HTML_DEP) $(POST_TEMPLATE) $(POST_CONF)
 	@$(POST_RENDERER) --template $(POST_TEMPLATE) \
      --obj '$(call getlocal,$(basename $(notdir $@)))' \
      < $< > $@
