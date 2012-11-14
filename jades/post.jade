@@ -7,7 +7,7 @@ block content
   article
     header.clearfix
       h1
-        a(href='/posts/#{post.date}/#{post.id}/') #{post.title}
+        a(href='/posts/#{post.id}.html') #{post.title}
       p.meta
         time(datetime='#{post.date}', pubdate) #{post.datetime}
     div!= post.content
