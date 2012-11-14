@@ -6,9 +6,8 @@
 
 var fs = require('fs')
   , path = require('path')
-  , marked = require('marked')
-  , hljs = require('highlight.js')
   , jade = require('jade')
+  , renderMarkdown = require('./utils').renderMarkdown
   , argv = require('optimist')
       .demand(['template', 'obj'])
       .usage("Usage: $0 --template hoge.jade --obj '{foo: 1}'")
@@ -29,28 +28,6 @@ var template = jade.compile(fs.readFileSync(argv.template), {
  */
 
 var options = eval('(' + argv.obj + ')');
-
-/**
- * enable hightlighting
- */
-
-marked.setOptions({
-  gfm: true
-, pedantic: false
-, sanitize: false
-, highlight: function (code, lang) {
-    if (lang) return hljs.highlight(lang, code).value;
-    return hljs.highlightAuto(code).value;
-  }
-});
-
-/**
- * markdown renderer
- */
-
-function renderMarkdown(content) {
-  return marked(content.toString());
-};
 
 /**
  * render jade to target directory
