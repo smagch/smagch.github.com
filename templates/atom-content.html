@@ -1,0 +1,7 @@
+<entry>
+  <title><%= post.title %></title>
+  <link rel='alternate' type='text/html' href='http://smagch.github.com/posts/<%= post.id %>.html'></link>
+  <updated><%= new Date(post.date).toISOString() %></update>
+  <id><%= post.id %></id>
+  <content><%= post.content %></content>
+</entry>

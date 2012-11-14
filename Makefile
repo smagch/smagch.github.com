@@ -25,7 +25,7 @@ POST_DEST = ./posts
 POST_CONF = ./fixtures/posts.json
 POST_CONF_RENDERER = ./fixtures/posts.js
 POST_RENDERER = ./fixtures/article.js
-POST_TEMPLATE = ./jades/post.jade
+POST_TEMPLATE = ./templates/post.jade
 POST_MD = $(wildcard $(POST_SRC)/*.md)
 
 # Add blog posts
@@ -60,6 +60,13 @@ getlocal = $(shell cat << cat $(POST_CONF) \
 #
 
 all: $(CSS) $(HTML)
+
+#
+# Atom feed renderer
+#
+
+atom.xml: $(POST_CONF)
+	@node ./fixtures/atom.js --obj $< --src $(POST_SRC) > $@
 
 #
 # html renderer
@@ -108,6 +115,6 @@ $(POST_DEST)/%.html: $(POST_SRC)/%.md $(POST_CONF)
 #
 
 clean:
-	@rm $(HTML) $(CSS) $(POST_CONF)
+	@rm $(HTML) $(CSS) $(POST_CONF) $(ATOM)
 
 .PHONY: clean
