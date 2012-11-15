@@ -41,9 +41,9 @@ section
     margin: 0 0 0 20px
     a
       text-decoration: none
-      color: $a_col
+      color: $main_header_col
       &:visited
-        color: $a_col
+        color: $main_header_col
       &:visited:hover
         color: $a_hover
   img
@@ -64,7 +64,7 @@ section
   line-height: $F_H
   background: $BACK
   text-align: right
-  color: #2F2F2F
+  color: $main_header_col
   span
     margin-right: 10px
 
@@ -130,19 +130,22 @@ article
     padding: 0
     width: $w
 
+code
+  background: hsla(hue($main_back), 10%, 28%, 6%)
+
 pre
-  background: hsla(hue($main_back), 10%, 10%, 10%)
+  background: hsla(hue($main_back), 10%, 28%, 6%)
   padding: 10px 10px 20px 30px
-  overflow: hidden
-  $border = darken($main_back, 10%)
+  overflow: scroll
+  $border = darken(@background, 10%)
   border-top: 1px solid $border
   border-bottom: 1px solid $border
+  margin: 30px 0
+  code
+    background: none
 
-pre,
 iframe
   margin: 30px 0
-
-iframe
   display: block
   border: none
   width: 100%
