@@ -6,14 +6,15 @@ block append head
 block content
   article
     header
-      h1 Posts
-    - var currentMonth = null;
-    each post in posts
-      if post.month !== currentMonth
-        h3.center #{post.month}
-        - currentMonth = post.month
+      h1 Archive
 
-      ul.items
+    - var currentMonth = null;
+    ul.items
+      each post in posts
+        if post.month !== currentMonth
+          li
+            h3.center #{post.month}
+            - currentMonth = post.month
         li
           a(href='/posts/#{post.id}.html') #{post.title}
           time(date='#{post.date}') #{post.datetime}
