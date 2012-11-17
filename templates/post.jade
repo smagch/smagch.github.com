@@ -12,12 +12,19 @@ block content
         time(datetime='#{post.date}', pubdate) #{post.datetime}
     article!= post.content
 
+    .post-link
+      if post.next
+        a.noline.pull-right(href='/posts/#{post.next}.html') next post
+      if post.prev
+        a.noline(href='/posts/#{post.prev}.html') previous post
+
 block nav
   ul
     if post.next
       li: a(href='/posts/#{post.next}.html') next
     else
       li: a.black next
+
     if post.prev
       li: a(href='/posts/#{post.prev}.html') prev
     else
