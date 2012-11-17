@@ -53,7 +53,7 @@ CSS_DEPS = $(wildcard ./stylesheets/lib/*.styl) \
 
 getlocal = $(shell cat << cat $(POST_CONF) \
   | $(JSON) posts \
-  | $(JSON) -c 'id=="$(1)"' \
+  | $(JSON) -c 'filename=="$(1)"' \
   | $(JSON) 0 -o json-0 \
 )
 
@@ -100,7 +100,7 @@ $(POST_CONF): $(POST_SRC)
 
 $(POST_DEST)/%.html: $(POST_SRC)/%.md $(HTML_DEP) $(POST_TEMPLATE) $(POST_CONF)
 	@$(POST_RENDERER) --template $(POST_TEMPLATE) \
-     --obj '$(call getlocal,$(basename $(notdir $@)))' \
+     --obj '$(call getlocal,$(notdir $<))' \
      < $< > $@
 	@echo "html rendered to $@"
 
