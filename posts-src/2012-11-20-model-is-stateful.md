@@ -240,7 +240,7 @@ Let's take a look at one possible implementation without `"select"` event.
 
 ### ItemView without `"select"` event
 
-* `"click"` event => highlight comment item => show JSON.
+* `"click"` event => highlight comment item & show JSON.
 
 ```javascript
 /**
