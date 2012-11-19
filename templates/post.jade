@@ -18,6 +18,10 @@ block content
       if post.prev
         a.noline(href='/posts/#{post.prev}.html') previous post
 
+  .comments
+    #disqus_thread
+  include disqus.html
+
 block nav
   ul
     if post.next
