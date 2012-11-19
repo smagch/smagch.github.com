@@ -9,5 +9,7 @@ Using Makefile, I learned lots of nice features that I didn't know, such as `$(c
 
 [jkeyll]: https://github.com/mojombo/jekyll
 [GNU make]: http://www.gnu.org/software/make/manual/make.html
+[Node.js]: http://nodejs.org/
+[express]: http://expressjs.com/
 [codex]: https://github.com/logicalparadox/codex
 [Secondary Expansion]: http://www.gnu.org/software/make/manual/make.html#Secondary-Expansion
