@@ -1,0 +1,20 @@
+extends templates/base
+
+block append head
+  title blog
+
+block content
+  article
+    header
+      h1 Archive
+
+    - var currentMonth = null;
+    ul.items
+      each post in posts
+        if post.month !== currentMonth
+          li
+            h3.center #{post.month}
+            - currentMonth = post.month
+        li
+          a(href='/posts/#{post.id}.html') #{post.title}
+          time(date='#{post.date}') #{post.datetime}

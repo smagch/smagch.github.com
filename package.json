@@ -1,0 +1,21 @@
+{
+  "name": "smagch.com",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "stylus": "0.26.x",
+    "nib": "~0.7",
+    "jade": "*",
+    "marked": "~0.2",
+    "moment": "~1.6",
+    "jsontool": "~5.1",
+    "highlight.js": "7.x",
+    "optimist": "~0.3",
+    "underscore": "~1.4"
+  },
+  "engines": {
+    "node": "0.8.x"
+  },
+  "author": "smagch <smagch@gmail.com>",
+  "description": "my website"
+}

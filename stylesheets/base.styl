@@ -1,0 +1,189 @@
+
+html
+body
+  margin: 0
+  padding: 0
+  height: 100%
+  font-size: 14px
+  color: #2E2E2E
+  background: $BACK
+
+h1
+h2
+h3
+h4
+h5
+h6
+  color: $header_col
+
+h1 a
+  text-decoration: none
+
+h2 a
+  text-decoration: none
+
+section
+  margin: 10px auto
+
+#wrapper
+  min-height: 100%
+  position: relative
+  background: $main_back
+  width: $W
+
+#main-header
+  margin: 0 auto
+  padding: 0
+  height: $H_H
+  background: $BACK
+  h1
+    margin: 0 0 0 20px
+    a
+      text-decoration: none
+      color: $main_header_col
+      &:visited
+        color: $main_header_col
+      &:visited:hover
+        color: $a_hover
+  img
+    margin: 0
+    padding: 0
+
+#container
+  padding-bottom: $F_H
+
+#content
+  padding-left: $nav_w
+
+#main-footer
+  position: absolute
+  bottom: 0
+  width: 100%
+  height: $F_H
+  line-height: $F_H
+  background: $BACK
+  text-align: right
+  color: $main_header_col
+  span
+    margin-right: 10px
+
+nav
+  background: $nav_back
+  width: $nav_w
+  position: absolute
+  left: 0
+  top: $H_H
+  bottom: 0
+  display: block
+  overflow: auto
+  ul
+    list-style: none
+    margin: 14px 20px 0 0
+    padding: 0
+    display: block
+    li
+      display: block
+      margin: 0
+      padding: 0
+      a
+        display: block
+        width: 100%
+        height: $nav_h
+        line-height: $nav_h
+        color: $nav_col
+        font-size: 14px
+        text-decoration: none
+        vertical-align: middle
+        text-align: right
+        &:hover
+        &:hover:visited
+        &.active
+          color: saturate($nav_col, 80%)
+        &:visited
+          color: @color
+        &.black
+          color: #1B1B1B
+
+article
+  padding: 0 0 30px
+  margin: 0 auto
+  h1, h2, h3, h4, h5
+    width: $w
+  h1, h2
+    margin: 30px 0 30px 60px
+  h3, h4, h5
+    margin: 10px 0 10px 60px
+  h2
+    border-bottom: 2px solid #454545
+  ol, ul
+    width: $w
+    margin: 14px auto 30px
+    padding-left: 80px
+  header
+    width: ($w - 40)
+    margin: 20px auto
+    padding: 30px
+    h1
+      font-size: 30px
+      margin: 0
+    .meta
+      color: $gray_light
+      float: right
+      text-align: right
+  p
+    margin: 0 auto 10px
+    padding: 0
+    width: $w
+
+code
+  background: hsla(hue($main_back), 10%, 28%, 6%)
+
+pre
+  background: hsla(hue($main_back), 10%, 28%, 6%)
+  padding: 10px 10px 20px 30px
+  overflow: scroll
+  $border = darken(@background, 10%)
+  border-top: 1px solid $border
+  border-bottom: 1px solid $border
+  margin: 30px 0
+  code
+    background: none
+
+iframe
+  margin: 30px 0
+  display: block
+  border: none
+  width: 100%
+  height: 400px
+
+ul.items
+  list-style: none
+  margin: 0
+  padding: 0
+  width: 100%
+  li
+    position: relative
+    a
+      display: block
+      background: lighten($main_back, 4%)
+      margin: 0 auto
+      font-size: 20px
+      padding-left: 20px
+      line-height: 70px
+      height: 70px
+      border-top: 1px solid darken($main_back, 4%)
+      text-decoration: none
+    time
+      position: absolute
+      bottom: 2px
+      right: 10px
+      font-size: 12px
+      color: darken($main_back, 30%)
+
+.center
+  text-align: center
+
+.post-link
+  clearfix()
+  margin-left: 60px
+  margin-right: 60px
