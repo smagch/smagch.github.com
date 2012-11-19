@@ -1,6 +1,3 @@
-# This is my blog development branch
+# This is my blog.
 
-## TODO
-
-* RSS
-* CNAME
+<http://smagch.github.com/>
