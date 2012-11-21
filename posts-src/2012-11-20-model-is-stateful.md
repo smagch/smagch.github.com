@@ -4,6 +4,8 @@ Example application is [placed on github](https://github.com/smagch/backbone-exa
 This post is the first part of my Backbone tips series.
 So I'll add more examples in the future.
 
+* updates Nov. 22 2012: remove a description about verbose JSON.
+
 Update View via custom event
 ----------------------------
 
@@ -39,7 +41,7 @@ var ItemView = Backbone.View.extend({
     e.stopPropagation();
   },
   render: function (collection, options) {
-    var json = collection.toVerboseJSON();
+    var json = collection.toJSON();
     var html = this.template({ models: json });
     this.$el.empty().html(html);
     return this;
@@ -79,7 +81,7 @@ var ItemView = Backbone.View.extend({
     $target.removeClass('selected');
   },
   render: function (collection, options) {
-    var json = collection.toVerboseJSON();
+    var json = collection.toJSON();
     var html = this.template({ models: json });
     this.$el.empty().html(html);
     return this;
@@ -102,7 +104,6 @@ Let's get into detail implementation of Model and Collection.
 var ItemModel = Backbone.Model.extend({
   toVerboseJSON: function () {
     var json = this.toJSON();
-    json.id = this.id;
     json.cid = this.cid;
     return json;
   },
@@ -160,7 +161,7 @@ var ItemCollection = Backbone.Collection.extend({
 });
 ```
 
-In this example, I use verbose JSON for rendering element so that elements are able to hold `data-id` attribute.
+In this example, I use `data-id` attribute.
 The template for item is following.
 
 ```
