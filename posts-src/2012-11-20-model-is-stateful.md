@@ -6,8 +6,7 @@ So I'll add more examples in the future.
 
 * updates Nov. 22 2012: remove a description about verbose JSON.
 
-Update View via custom event
-----------------------------
+## [Update View via custom event](#update-view-via-custom-event)
 
 Let's take a following example.
 
@@ -183,8 +182,7 @@ $('body').on('click', function () {
 });
 ```
 
-Design event flow
------------------
+## [Design event flow](#design-event-flow)
 
 Let's add one more View to make app more neat.
 `JsonView` will show user raw JSON data on the right side when a comment is selected.
@@ -341,8 +339,7 @@ But it should be noted that there is a big difference in structure between them.
 With `"select"` event, `JsonView` describe its behavior by binding `"select"` and `"deselect"` event handler.
 So in this case, `JsonView` is an application specific module.
 
-Don't `.trigger()` outside of module
-------------------------------------
+## [Don't `.trigger()` outside of module](#dont-trigger-outside-of-module)
 
 Once you define `"select"` event, you may want to `collection.trigger("select", model);`
 when you want item to be selected.
@@ -406,8 +403,7 @@ custom_event: function () {
 }
 ```
 
-Consider which data user is interacting with before starting to write codes
----------------------------------------------------------------------------
+## [Consider which data user is interacting with before starting to write codes](#consider-which-data-user-is-interacting-with-before-starting-to-write-codes)
 
 Even if you're using [Backbone.js] and get rid of DOM manipulation spaghetti,
 spaghetti can still happen when you don't design your application carefully.
@@ -417,8 +413,7 @@ So it's important to consider data first.
 And then you may design some custom events and their event flow to come up to the spec of application.
 In the example, I came up with `"select"` event to allow user to select and show a model from HN comment item list.
 
-Next post
----------
+## [Next post](#next-post)
 
 Next time, I'll describe more about how to design custom events which do server request.
 And how to interact with Router nicely in a larger scale application.
