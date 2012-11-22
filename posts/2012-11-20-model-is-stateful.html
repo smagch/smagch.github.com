@@ -8,7 +8,7 @@ So I&#39;ll add more examples in the future.
 <ul>
 <li>updates Nov. 22 2012: remove a description about verbose JSON.</li>
 </ul>
-<h2>Update View via custom event</h2>
+<h2><a href="#update-view-via-custom-event">Update View via custom event</a></h2>
 <p>Let&#39;s take a following example.
 
 </p>
@@ -176,7 +176,7 @@ So it&#39;s safe to do like this.
 <pre><code class="lang-javascript">$(<span class="string">'body'</span>).on(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
   itemCollection.deselect();
 });</code></pre>
-<h2>Design event flow</h2>
+<h2><a href="#design-event-flow">Design event flow</a></h2>
 <p>Let&#39;s add one more View to make app more neat.
 <code>JsonView</code> will show user raw JSON data on the right side when a comment is selected.
 
@@ -324,7 +324,7 @@ With <code>&quot;select&quot;</code> event, <code>JsonView</code> describe its b
 So in this case, <code>JsonView</code> is an application specific module.
 
 </p>
-<h2>Don&#39;t <code>.trigger()</code> outside of module</h2>
+<h2><a href="#dont-trigger-outside-of-module">Don&#39;t <code>.trigger()</code> outside of module</a></h2>
 <p>Once you define <code>&quot;select&quot;</code> event, you may want to <code>collection.trigger(&quot;select&quot;, model);</code>
 when you want item to be selected.
 This is a certain bad practice when you design your own custom event.
@@ -386,7 +386,7 @@ Let&#39;s take this pattern all the time.
   <span class="keyword">this</span>.trigger(<span class="string">'custom_event'</span>);
   <span class="keyword">return</span> <span class="keyword">this</span>;
 }</code></pre>
-<h2>Consider which data user is interacting with before starting to write codes</h2>
+<h2><a href="#consider-which-data-user-is-interacting-with-before-starting-to-write-codes">Consider which data user is interacting with before starting to write codes</a></h2>
 <p>Even if you&#39;re using <a href="http://backbonejs.org/">Backbone.js</a> and get rid of DOM manipulation spaghetti,
 spaghetti can still happen when you don&#39;t design your application carefully.
 What Application stand for?
@@ -396,7 +396,7 @@ And then you may design some custom events and their event flow to come up to th
 In the example, I came up with <code>&quot;select&quot;</code> event to allow user to select and show a model from HN comment item list.
 
 </p>
-<h2>Next post</h2>
+<h2><a href="#next-post">Next post</a></h2>
 <p>Next time, I&#39;ll describe more about how to design custom events which do server request.
 And how to interact with Router nicely in a larger scale application.
 In the future, I want to give a large scale example which has lots of Collection and multiple Router.
