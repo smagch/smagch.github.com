@@ -1,0 +1,334 @@
+<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="description" content="about smagch"><meta name="viewport" content="width=device-width"><meta name="author" content="smagch"><meta name="keywords" content="Node.js,javascript"><link rel="stylesheet" href="/stylesheets/home.css"><script src="/javascripts/modernizr.min.js"></script><title>assemble modules by events</title></head><body><div id="wrapper"><header id="main-header"><h1><a href="/">smagch.github.com</a></h1></header><div id="container"><nav><ul><li><a href="/">Home</a></li><li><a href="/about/">About</a></li><li><a href="https://twitter.com/smagch">twitter</a></li><li><a href="https://github.com/smagch">github</a></li></ul><ul><li><a class="black">next</a></li><li><a href="/posts/2012-11-20-model-is-stateful.html">prev</a></li></ul></nav><div id="content"><article><header class="clearfix"><h1><a href="/posts/2012-12-10-assemble-modules-by-events.html">assemble modules by events</a></h1><p class="meta"><time datetime="2012-12-10" pubdate>Dec 10th 2012</time></p></header><article><p>This blog post is the second part of my Backbone tutorial.
+If you haven&#39;t read <a href="http://smagch.github.com/posts/2012-11-20-model-is-stateful.html">the previous post</a>, I&#39;d recommend to read through the one at first.
+I&#39;m going to add a few feature to <a href="http://smagch.github.com/backbone-examples/select2/">the previous example</a>.
+There are two modules added.
+
+</p>
+<ul>
+<li><code>FilterView</code> - filter ItemCollection search</li>
+<li><code>AppRouter</code> - application&#39;s main router</li>
+</ul>
+<p>The Example is <a href="https://github.com/smagch/backbone-examples/tree/gh-pages/filter">placed on Github</a>.
+
+</p>
+<div class='img-container'>
+  <a href='http://smagch.github.com/backbone-examples/filter/'>
+    <img src='../images/hn-item-filter.png'></img>
+  </a>
+</div>
+
+<h2><a href="#keep-collection-and-view-minimal">Keep Collection and View minimal</a></h2>
+<p>I added a filter feature to <code>ItemCollection</code> adding query parameters: <code>type</code> and <code>sort</code>.
+
+</p>
+<ul>
+<li>&quot;type&quot; - &quot;comment&quot; and &quot;submission&quot;.</li>
+<li>&quot;sort&quot; - &quot;create_ts&quot;, &quot;points&quot; and &quot;num_comments&quot;</li>
+</ul>
+<p>The Route spec is simply &quot;#:type/:sort&quot;.
+So when you go to <a href="http://smagch.github.com/backbone-examples/filter/#submission/num_comments">#submission/num_comments</a> route,
+you&#39;ll see the most commented 20 submissions.
+
+</p>
+<p>There are potentially 6 view states as filter parameter changes.
+
+</p>
+<ul>
+<li>&quot;type&quot; =&gt; &quot;comment&quot; &amp; &quot;sort&quot; =&gt; &quot;create_ts&quot;</li>
+<li>&quot;type&quot; =&gt; &quot;comment&quot; &amp; &quot;sort&quot; =&gt; &quot;points&quot;</li>
+<li>&quot;type&quot; =&gt; &quot;comment&quot; &amp; &quot;sort&quot; =&gt; &quot;num_comments&quot;</li>
+<li>&quot;type&quot; =&gt; &quot;submission&quot; &amp; &quot;sort&quot; =&gt; &quot;create_ts&quot;</li>
+<li>&quot;type&quot; =&gt; &quot;submission&quot; &amp; &quot;sort&quot; =&gt; &quot;points&quot;</li>
+<li>&quot;type&quot; =&gt; &quot;submission&quot; &amp; &quot;sort&quot; =&gt; &quot;num_comments&quot;</li>
+</ul>
+<p>How to manage view states?
+How many View/Collection do you instantiate?
+There are potentially 3 options.
+
+</p>
+<ul>
+<li>6 View &amp; 6 Collection</li>
+<li>6 View &amp; 1 Collection</li>
+<li>1 View &amp; 1 Collection</li>
+</ul>
+<p>Do you use jQuery plugin to switch views?
+Even so, maintaining 6 views is certainly painful.
+What if there are more filter parameters? You&#39;ll need to maintain more View/Collection.
+Thus it&#39;s better to keep it simple: just one View and one Collection.
+
+</p>
+<p>But there is a downside when we take the one Collection solution.
+It performs new request every time when filter changes.
+Now it&#39;s time to implement cache functionality overriding <code>.sync()</code> method.
+There is a nice <a href="http://engineering.linkedin.com/mobile/linkedin-ipad-using-local-storage-snappy-mobile-apps">post by LinkedIn</a> which uses LocalStorage.
+In this example, I uses Isaac Schlueter&#39;s <a href="https://github.com/isaacs/node-lru-cache">lru-cache</a> for caching responses.
+Now <code>ItemCollection</code> looks something like this.
+
+</p>
+<pre><code class="lang-javascript">
+<span class="comment">/**
+ * Hacker News Item Collection
+ *
+ * parameters
+ *   - type: "comment" or "submission"
+ *   - sort: "create_ts" or "points" or "num_comments"
+ *
+ * Cache up to recently used 10 requests based of query parameter hash
+ * You may want to use LocalStorage for caching
+ * http://engineering.linkedin.com/mobile/linkedin-ipad-using-local-storage-snappy-mobile-apps
+ *
+ * In this case, it use Isaac Schlueter's lru-cache
+ * https://github.com/isaacs/node-lru-cache
+ *
+ * For real HN app, you'll want to set `maxAge` option in LURCache
+ * since HN Search API reject stale signedId
+ *
+ * Note: It won't work in old browsers since LRUCache uses `Object.defineProperty`
+ */</span>
+
+<span class="keyword">var</span> ItemCollection = Backbone.Collection.extend({
+  model: ItemModel,
+  initialize: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="keyword">this</span>._selected = <span class="literal">null</span>;
+    <span class="keyword">this</span>._params = {};
+    <span class="keyword">this</span>.cache = <span class="keyword">new</span> LRUCache(<span class="number">10</span>);
+  },
+  hasChange: <span class="function"><span class="keyword">function</span> <span class="params">(params)</span> {</span>
+    <span class="keyword">for</span> (<span class="keyword">var</span> key <span class="keyword">in</span> params) {
+      <span class="keyword">if</span> (<span class="keyword">this</span>._params[key] !== params[key]) {
+        <span class="keyword">return</span> <span class="literal">true</span>;
+      }
+    }
+    <span class="keyword">return</span> <span class="literal">false</span>;
+  },
+  filter: <span class="function"><span class="keyword">function</span> <span class="params">(obj, options)</span> {</span>
+    <span class="comment">// balk if it obj has no changes</span>
+    <span class="keyword">if</span> (!<span class="keyword">this</span>.hasChange(obj)) <span class="keyword">return</span>;
+    <span class="comment">// deselect if there is selection</span>
+    <span class="keyword">this</span>.deselect();
+    _.extend(<span class="keyword">this</span>._params, obj);
+    <span class="keyword">this</span>.trigger(<span class="string">'filter'</span>, _.clone(<span class="keyword">this</span>._params), options);
+    <span class="keyword">return</span> <span class="keyword">this</span>.fetch(options);
+  },
+  getFilterHash: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="keyword">return</span> $.param({
+      <span class="string">'filter[fields][type]'</span>: <span class="keyword">this</span>._params.type,
+      limit: <span class="number">20</span>,
+      sortby: <span class="keyword">this</span>._params.sort + <span class="string">' desc'</span>
+    });
+  },
+  url: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="keyword">return</span> <span class="string">'http://api.thriftdb.com/api.hnsearch.com/items/_search?'</span>
+      + <span class="keyword">this</span>.getFilterHash() + <span class="string">'&amp;callback=?'</span>;
+  },
+  parse: <span class="function"><span class="keyword">function</span> <span class="params">(res)</span> {</span>
+    <span class="keyword">return</span> res.results;
+  },
+  select: <span class="function"><span class="keyword">function</span> <span class="params">(id, options)</span> {</span>
+    <span class="keyword">var</span> model = <span class="keyword">this</span>.get(id);
+    <span class="keyword">if</span> (!model) <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'invlid id : '</span> + id);
+    <span class="comment">// balk if when the modal is already selected</span>
+    <span class="keyword">if</span> (<span class="keyword">this</span>._selected === model) <span class="keyword">return</span>;
+    <span class="comment">// selected model should be single</span>
+    <span class="keyword">if</span> (<span class="keyword">this</span>._selected) <span class="keyword">this</span>.deselect();
+    <span class="keyword">this</span>._selected = model;
+    <span class="keyword">this</span>.trigger(<span class="string">'select'</span>, model, options);
+    <span class="keyword">return</span> <span class="keyword">this</span>;
+  },
+  deselect: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="keyword">if</span> (!<span class="keyword">this</span>._selected) <span class="keyword">return</span>;
+    <span class="keyword">this</span>.trigger(<span class="string">'deselect'</span>, <span class="keyword">this</span>._selected);
+    <span class="keyword">this</span>._selected = <span class="literal">null</span>;
+    <span class="keyword">return</span> <span class="keyword">this</span>;
+  },
+  sync: <span class="function"><span class="keyword">function</span> <span class="params">(method, model, options)</span> {</span>
+    <span class="keyword">if</span> (method !== <span class="string">'read'</span>) {
+      <span class="keyword">return</span> Backbone.sync.call(<span class="keyword">this</span>, method, model, options);
+    }
+    <span class="keyword">var</span> self = <span class="keyword">this</span>;
+    <span class="keyword">var</span> key = <span class="keyword">this</span>.getFilterHash();
+    <span class="keyword">var</span> value = <span class="keyword">this</span>.cache.get(key);
+    <span class="keyword">var</span> xhr;
+    <span class="keyword">if</span> (!value) {
+      xhr = Backbone.sync.call(<span class="keyword">this</span>, method, model, options);
+      xhr.done(<span class="function"><span class="keyword">function</span> <span class="params">(res, msg, xhr)</span> {</span>
+        self.cache.set(key, res);
+      });
+      <span class="keyword">return</span> xhr;
+    }
+    <span class="comment">// perform psudo request</span>
+    xhr = $.Deferred();
+    _.defer(<span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+      <span class="comment">// this is always true if it's from `.fetch()` call</span>
+      <span class="keyword">if</span> (options &amp;&amp; <span class="keyword">typeof</span> options.success === <span class="string">'function'</span>) {
+        options.success(value, <span class="string">'success'</span>, xhr);
+      }
+      xhr.resolve(value, <span class="string">'success'</span>, xhr);
+    });
+    <span class="keyword">return</span> xhr.promise();
+  }
+});</code></pre>
+<p>It need to be the same manner that <code>Backbone.sync()</code> does since it overrides <code>.sync()</code> method.
+
+</p>
+<ul>
+<li>return <a href="http://api.jquery.com/promise/">Promise</a> just as <code>$.ajax()</code></li>
+<li>it calls <code>options</code>&#39;s &quot;success&quot; or &quot;error&quot; function based on its response status</li>
+</ul>
+<p>It caches a response through <code>.done()</code> callback.
+The <a href="http://api.jquery.com/category/deferred-object/">Deferred Object</a> will be resolved quickly through <code>_.defer()</code> when it has a cached response.
+It should be noted that the cached response doesn&#39;t emulate <code>$.ajax()</code> <a href="http://api.jquery.com/promise/">Promise</a> completely.
+You&#39;ll have a trouble if you expect properties such as <code>status</code> and <code>statusText</code>.
+
+</p>
+<p>Before you start <a href="http://backbonejs.org/">Backbone.js</a> development, there is one thing that worth keep in mind.
+Web application development is not just a web development.
+jQuery plugins that is nice with web development isn&#39;t always nice with <a href="http://backbonejs.org/">Backbone.js</a> development.
+In this case, jQuery tab plugin doesn&#39;t really fit in for switching views.
+Because each view state is tightly bound to Collection/Model which update view state through events.
+
+</p>
+<h2><a href="#treat-router-as-peer-module-to-views">Treat Router as peer module to Views</a></h2>
+<p>When <code>ItemCollection</code> is filtered, <code>ItemView</code> and <code>FilterView</code> update their DOM element through events: <code>&quot;reset&quot;</code> event and <code>&quot;filter&quot;</code> event.
+
+</p>
+<ul>
+<li><code>ItemView</code> - update with <code>&quot;reset&quot;</code> event.</li>
+<li><code>FilterView</code> - update with a custom event: <code>&quot;filter&quot;</code>.</li>
+</ul>
+<pre><code class="lang-javascript">
+<span class="keyword">var</span> FilterView = Backbone.View.extend({
+  initialize: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
+    <span class="keyword">this</span>.collection.on(<span class="string">'filter'</span>, <span class="keyword">this</span>.render, <span class="keyword">this</span>);
+  },
+  events: {
+    <span class="string">'click [data-type]'</span>: <span class="string">'typeClicked'</span>,
+    <span class="string">'click [data-sort]'</span>: <span class="string">'sortClicked'</span>
+  },
+  typeClicked: <span class="function"><span class="keyword">function</span> <span class="params">(e)</span> {</span>
+    e.stopPropagation();
+    <span class="keyword">var</span> $target = $(e.currentTarget);
+    <span class="keyword">var</span> type = $target.attr(<span class="string">'data-type'</span>);
+    <span class="keyword">this</span>.collection.filter({ type: type });
+  },
+  sortClicked: <span class="function"><span class="keyword">function</span> <span class="params">(e)</span> {</span>
+    e.stopPropagation();
+    <span class="keyword">var</span> $target = $(e.currentTarget);
+    <span class="keyword">var</span> sort = $target.attr(<span class="string">'data-sort'</span>);
+    <span class="keyword">this</span>.collection.filter({ sort: sort });
+  },
+  render: <span class="function"><span class="keyword">function</span> <span class="params">(params, options)</span> {</span>
+    <span class="keyword">this</span>.$(<span class="string">'[data-type='</span> + params.type + <span class="string">']'</span>)
+      .addClass(<span class="string">'active'</span>)
+      .siblings(<span class="string">'.active'</span>).removeClass(<span class="string">'active'</span>);
+    <span class="keyword">this</span>.$(<span class="string">'[data-sort='</span> + params.sort + <span class="string">']'</span>)
+      .addClass(<span class="string">'active'</span>)
+      .siblings(<span class="string">'.active'</span>).removeClass(<span class="string">'active'</span>);
+  }
+});</code></pre>
+<p>In <a href="http://smagch.github.com/posts/2012-11-20-model-is-stateful.html">the previous post</a>, I mentioned that view update shouldn&#39;t be directly through DOM events.
+Let&#39;s consider once again: why does <code>FilterView</code> update through <code>&quot;filter&quot;</code> event, not <code>&quot;click&quot;</code> DOM event?
+Because there is another module which filter collection,
+it should be done through a event from <code>ItemCollection</code> to keep event flow simple.
+Which module call <code>.filter()</code> method in this app?
+<code>AppRouter</code> filter the collection when the app starts!
+
+</p>
+<pre><code class="lang-javascript"><span class="keyword">var</span> AppRouter = Backbone.Router.extend({
+  routes: {
+    <span class="string">''</span>: <span class="string">'update'</span>,
+    <span class="string">':type'</span>: <span class="string">'update'</span>,
+    <span class="string">':type/:sort'</span>: <span class="string">'update'</span>
+  },
+  initialize: <span class="function"><span class="keyword">function</span> <span class="params">(options)</span> {</span>
+    <span class="keyword">this</span>.collection = options.collection
+      .on(<span class="string">'filter'</span>, <span class="keyword">this</span>.hashChange, <span class="keyword">this</span>);
+    <span class="keyword">this</span>.defaults = options.defaults;
+  },
+  hashChange: <span class="function"><span class="keyword">function</span> <span class="params">(collection)</span> {</span>
+    <span class="keyword">var</span> params = collection.params();
+    <span class="keyword">var</span> hash = params.type + <span class="string">'/'</span> + params.sort;
+    <span class="keyword">this</span>.navigate(hash);
+  },
+  update: <span class="function"><span class="keyword">function</span> <span class="params">(type, sort)</span> {</span>
+    <span class="keyword">var</span> params = _.defaults({}, {
+      type: type,
+      sort: sort
+    }, <span class="keyword">this</span>.defaults);
+    <span class="keyword">this</span>.collection.params(params);
+  }
+});</code></pre>
+<p><code>FilterView</code> and <code>AppRouter</code> does exactly same two things.
+
+</p>
+<ul>
+<li>update <code>ItemCollection</code> filter parameter through <code>.filter()</code> method</li>
+<li>render its DOM element when <code>ItemCollection</code>&#39;s parameters change.</li>
+</ul>
+<p>Just as View render its DOM element, Router render location hash in browser&#39;s url box.
+Both <code>FilterView</code> and <code>AppRouter</code> show user a filter state.
+And both of them can be used to update filter parameters.
+
+</p>
+<h2>Don&#39;t <code>.fetch()</code> outside of module</h2>
+<p>As I <a href="http://smagch.github.com/posts/2012-11-20-model-is-stateful.html#dont-trigger-outside-of-module">mentioned in the previous post</a>, <code>.trigger()</code> is worth prohibited.
+<code>.fetch()</code> is worth it as well in this case because all server requesting is done through <code>.filter()</code> method.
+
+</p>
+<h2><a href="#Summary">Summary</a></h2>
+<p>I&#39;ve come up with <code>&quot;filter&quot;</code> event and assembled modules through custom events.
+The application has just one Collection: <code>ItemCollection</code> which trigger three types of custom events: <code>&quot;select&quot;</code>, <code>&quot;deselect&quot;</code>, <code>&quot;filter&quot;</code>.
+Each of View/Router listens on the events. And also View/Router call the methods <code>.select()</code>, <code>.deselect()</code>, <code>.filter()</code> that will trigger the custom events.
+
+</p>
+<h3>ItemView</h3>
+<ul>
+<li>listen on <code>&quot;reset&quot;</code>, <code>&quot;filter&quot;</code>, <code>&quot;select&quot;</code>, <code>&quot;deselect&quot;</code>.</li>
+<li>call <code>.select()</code> through <code>&quot;click&quot;</code> DOM event</li>
+</ul>
+<h3>FilterView</h3>
+<ul>
+<li>listen on <code>&quot;filter&quot;</code>.</li>
+<li>call <code>.filter()</code> through <code>&quot;click&quot;</code> DOM event</li>
+</ul>
+<h3>JsonView</h3>
+<ul>
+<li>listen on <code>&quot;select&quot;</code>, <code>&quot;deselect&quot;</code></li>
+</ul>
+<h3>AppRouter</h3>
+<ul>
+<li>listen on <code>&quot;filter&quot;</code></li>
+<li>call <code>.filter()</code> through <code>&quot;route&quot;</code> event</li>
+</ul>
+<h3>body</h3>
+<ul>
+<li>call <code>.deselect()</code> through <code>&quot;click&quot;</code> DOM event</li>
+</ul>
+<p>Can you see how event flow works?
+In the next post, I&#39;ll replace <code>JsonView</code> to a something more interesting thing.
+
+</p>
+</article><div class="post-link"><a href="/posts/2012-11-20-model-is-stateful.html" class="noline">previous post</a></div></article><div class="comments"><div id="disqus_thread"></div></div><script type="text/javascript">
+     /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
+     var disqus_shortname = 'uithingsconsidered'; // required: replace example with your forum shortname
+
+     /* * * DON'T EDIT BELOW THIS LINE * * */
+     (function() {
+         var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
+         dsq.src = 'http://' + disqus_shortname + '.disqus.com/embed.js';
+         (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
+     })();
+</script>
+<noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div><a href="http://github.com/smagch"><img style="position: absolute; top: 40px; right: 0; border: 0;" src="/images/forkme.png" alt="Fork me on GitHub"></a><footer id="main-footer"><span>&copy;2012 &ndash; Shimaguchi Tomoya</span></footer><script type="text/javascript">
+  var _gaq = _gaq || [];
+  _gaq.push(['_setAccount', 'UA-25646251-1']);
+  _gaq.push(['_trackPageview']);
+
+  (function() {
+    var ga = document.createElement('script'); ga.type = 'text/javascript'; ga.async = true;
+    ga.src = ('https:' == document.location.protocol ? 'https://ssl' : 'http://www') + '.google-analytics.com/ga.js';
+    var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
+  })();
+
+</script></div></body></html>
