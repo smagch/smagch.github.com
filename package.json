@@ -1,0 +1,23 @@
+{
+  "name": "smagch.com",
+  "version": "0.0.1",
+  "private": true,
+  "devDependencies": {
+    "stylus": "*",
+    "nib": "*",
+    "jade": "*",
+    "marked": "*",
+    "moment": "*",
+    "highlight.js": "*",
+    "batch": "*",
+    "async-cache": "*"
+  },
+  "engines": {
+    "node": "0.10.x"
+  },
+  "scripts": {
+    "start": "node dev.js"
+  },
+  "author": "smagch <smagch@gmail.com>",
+  "description": "my website"
+}
