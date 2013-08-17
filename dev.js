@@ -14,6 +14,7 @@ var fs = require('fs')
 
 var TEMPLATE_PATH = path.join(__dirname, 'templates');
 var DEFAULT_TEMPLATE_NAME = 'post.jade';
+var PORT = 3000;
 
 /**
  * templates
@@ -123,6 +124,6 @@ var server = net.createServer(function(socket) {
 /**
  * listen port localhost 3000
  */
-server.listen(3000, function () {
-  console.log('listening port 3000');
+server.listen(PORT, function () {
+  console.log('development server listening port %d', PORT);
 });
