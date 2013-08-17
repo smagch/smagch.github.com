@@ -77,8 +77,16 @@ var server = net.createServer(function(socket) {
 
   // get meta data which is pre-pended JSON
   parser.on('header', function (head) {
-    console.error('got head');
+    console.log('got head');
     meta = head;
+    if (meta.invalidate) {
+      console.log('invalidate');
+      templates.reset();
+      socket.unpipe(parser);
+      socket.destroy();
+      return;
+    }
+
     // get jade template
     var templateName = meta.template || DEFAULT_TEMPLATE_NAME;
     console.dir(meta);
