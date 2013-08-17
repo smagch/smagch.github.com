@@ -71,6 +71,9 @@ CSS = $(patsubst \
   $(DEST_DIR)/stylesheets/%.css, \
   $(STYLUS_TARGETS) \
 )
+CSS_DEPS = stylesheets/base.styl \
+  stylesheets/variables.styl \
+  $(shell find stylesheets/lib -type f -name '*.styl')
 
 #
 # Phony targets
@@ -88,7 +91,17 @@ CSS = $(patsubst \
 # Build all
 #
 
-all: $(CSS) $(POST_DATA) $(HTML) $(POST_DEST) $(PAGE_DEST)
+all: $(CSS) invalidate.json $(POST_DATA) $(HTML) $(POST_DEST) $(PAGE_DEST)
+
+#
+# remove template caches
+# a bit hacky 
+#
+
+invalidate.json: $(TEMPLATE_LIB)
+	@ncat localhost 3000 < $@
+	@touch $@
+	@echo 'invalidate templates'
 
 #
 # JSON data for all blog posts
@@ -102,7 +115,7 @@ $(POST_DATA): $(POST_SRC_DIR)
 # render page contents
 #
 
-$(DEST_DIR)/%.html: pages/%.md $(TEMPLATE_LIB)
+$(DEST_DIR)/%.html: pages/%.md $(TEMPLATE_LIB) templates/post.jade
 	@ncat localhost 3000 < $< > $@
 	@echo 'compiled $@'
 
@@ -119,7 +132,7 @@ $(DEST_DIR)/%.html: templates/%.jade $(TEMPLATE_LIB)
 # see dev.js
 #
 
-$(POST_DEST_DIR)/%.html: $(POST_SRC_DIR)/%.md $(TEMPLATE_LIB)
+$(POST_DEST_DIR)/%.html: $(POST_SRC_DIR)/%.md $(TEMPLATE_LIB) templates/post.jade
 	@ncat localhost 3000 < $< > $@
 	@echo 'compiled $@'
 
