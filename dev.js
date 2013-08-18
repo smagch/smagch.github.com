@@ -6,7 +6,7 @@
 var fs = require('fs')
   , net = require('net')
   , marked = require('marked')
-  , hljs = require('highlight.js')
+  , pygmentize = require('pygmentize-bundled')
   , jade = require('jade')
   , path = require('path')
   , SimpleProtocol = require('./lib/simple-protocol')
@@ -52,15 +52,18 @@ templates.get(DEFAULT_TEMPLATE_NAME, function (err, template) {
 /**
  * enable hightlighting by highlight.js
  */
-marked.setOptions({
+var markedOptions = {
   gfm: true
 , pedantic: false
 , sanitize: false
-, highlight: function (code, lang) {
-    if (lang) return hljs.highlight(lang, code).value;
-    return hljs.highlightAuto(code).value;
+, highlight: function (code, lang, done) {
+    if (!lang) return done(null, code);
+    pygmentize({ lang: 'js', format: 'html' }, code, function (err, result) {
+      if (err) return done(err);
+      done(null, result.toString());
+    });
   }
-});
+};
 
 /**
  * tcp server which takes JSON-prepended markdown
@@ -83,7 +86,7 @@ var server = net.createServer(function(socket) {
       console.log('invalidate');
       templates.reset();
       socket.unpipe(parser);
-      socket.destroy();
+      socket.end();
       return;
     }
 
@@ -121,11 +124,14 @@ var server = net.createServer(function(socket) {
       buffer += chunk;
     }
 
-    meta.content = marked(buffer);
-    var html = template(meta);
-    socket.write(html);
-    socket.end();
-    buffer = '';
+    marked(buffer, markedOptions, function (err, content) {
+      if (err) throw err;
+      meta.content = content;
+      var html = template(meta);
+      buffer = '';
+      socket.write(html);
+      socket.end();
+    });
   }
 });
 

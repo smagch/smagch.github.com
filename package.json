@@ -8,7 +8,7 @@
     "jade": "*",
     "marked": "*",
     "moment": "*",
-    "highlight.js": "*",
+    "pygmentize-bundled": "~1.2",
     "batch": "*",
     "async-cache": "*"
   },
