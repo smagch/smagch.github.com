@@ -14,7 +14,7 @@ var fs = require('fs')
 
 var TEMPLATE_PATH = path.join(__dirname, 'templates');
 var DEFAULT_TEMPLATE_NAME = 'post.jade';
-var PORT = 3000;
+var PORT = 3001;
 
 /**
  * templates

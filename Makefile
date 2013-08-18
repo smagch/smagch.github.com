@@ -99,7 +99,7 @@ all: $(CSS) invalidate.json $(POST_DATA) $(HTML) $(POST_DEST) $(PAGE_DEST)
 #
 
 invalidate.json: $(TEMPLATE_LIB)
-	@ncat localhost 3000 < $@
+	@ncat 127.0.0.1 3001 < $@
 	@touch $@
 	@echo 'invalidate templates'
 
@@ -116,7 +116,7 @@ $(POST_DATA): $(POST_SRC_DIR)
 #
 
 $(DEST_DIR)/%.html: pages/%.md $(TEMPLATE_LIB) templates/post.jade
-	@ncat localhost 3000 < $< > $@
+	@ncat 127.0.0.1 3001 < $< > $@
 	@echo 'compiled $@'
 
 #
@@ -133,7 +133,7 @@ $(DEST_DIR)/%.html: templates/%.jade $(TEMPLATE_LIB)
 #
 
 $(POST_DEST_DIR)/%.html: $(POST_SRC_DIR)/%.md $(TEMPLATE_LIB) templates/post.jade
-	@ncat localhost 3000 < $< > $@
+	@ncat 127.0.0.1 3001 < $< > $@
 	@echo 'compiled $@'
 
 #
