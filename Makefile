@@ -94,8 +94,8 @@ CSS_DEPS = stylesheets/base.styl \
 all: $(CSS) invalidate.json $(POST_DATA) $(HTML) $(POST_DEST) $(PAGE_DEST)
 
 #
-# remove template caches
-# a bit hacky 
+# remove all template caches
+# a bit hacky
 #
 
 invalidate.json: $(TEMPLATE_LIB)
@@ -113,14 +113,17 @@ $(POST_DATA): $(POST_SRC_DIR)
 
 #
 # render page contents
+# naming convention of template is to use same basename among markdown and jade
+#   e.g.   about.html => about.md, about.jade
 #
 
-$(DEST_DIR)/%.html: pages/%.md $(TEMPLATE_LIB) templates/post.jade
+$(DEST_DIR)/%.html: pages/%.md templates/%.jade $(TEMPLATE_LIB)
 	@ncat 127.0.0.1 3001 < $< > $@
 	@echo 'compiled $@'
 
 #
-# render HTML pages with Jade template
+# Render HTML pages with Jade template and no markdown
+# it would be slow since jade template need to be compiled each time
 #
 
 $(DEST_DIR)/%.html: templates/%.jade $(TEMPLATE_LIB)
