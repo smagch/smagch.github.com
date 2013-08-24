@@ -57,7 +57,7 @@ var markedOptions = {
 , sanitize: false
 , highlight: function (code, lang, done) {
     if (!lang) return done(null, code);
-    pygmentize({ lang: 'js', format: 'html' }, code, function (err, result) {
+    pygmentize({ lang: 'js', format: 'html', options: { nowrap: true }}, code, function (err, result) {
       if (err) return done(err);
       done(null, result.toString());
     });
