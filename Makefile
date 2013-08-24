@@ -65,7 +65,9 @@ TEMPLATE_LIB = $(wildcard templates/lib/*)
 # Stylus
 #
 
-STYLUS_TARGETS = stylesheets/home.styl
+STYLUS_TARGETS = \
+  stylesheets/home.styl \
+  stylesheets/post.styl
 CSS = $(patsubst \
   stylesheets/%.styl, \
   $(DEST_DIR)/stylesheets/%.css, \
