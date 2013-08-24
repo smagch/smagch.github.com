@@ -36,8 +36,7 @@ var templates = new AsyncCache({
     // watch file and reset template
     fs.watch(filepath, function () {
       console.log('re-compiling %s', filepath);
-      var data = fs.readFileSync(filepath);
-      templates.set(filename, compile(data));
+      templates.del(filename);
     });
   }
 });
