@@ -5,7 +5,7 @@ block append head
   link(rel='stylesheet', href='/stylesheets/home.css')
 
 block content
-  article
+  article.container
     header
       h1.linux Archive
 
@@ -17,5 +17,5 @@ block content
             h3.center #{post.month}
             - currentMonth = post.month
         li
-          a(href='/posts/#{post.filename}') #{post.title}
+          a.linux(href='/posts/#{post.filename}') #{post.title}
           time(date='#{post.date}') #{post.date}
