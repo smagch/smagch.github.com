@@ -2,11 +2,12 @@ extends ./lib/base
 
 block append head
   title blog
+  link(rel='stylesheet', href='/stylesheets/home.css')
 
 block content
   article
     header
-      h1 Archive
+      h1.linux Archive
 
     - var currentMonth = null;
     ul.items

@@ -1,4 +1,11 @@
 extends ./lib/base.jade
 
+block head
+  link(rel='stylesheet', href='/stylesheets/post.css')
+
 block content
-  div!= content
+  article.container
+    header.inner
+      h1 #{title}
+    .inner!= content
+
