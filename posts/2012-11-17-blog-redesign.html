@@ -1,16 +1,10 @@
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="description" content="about smagch"><meta name="viewport" content="width=device-width"><meta name="author" content="smagch"><meta name="keywords" content="Node.js,javascript"><link rel="stylesheet" href="/stylesheets/home.css"><script src="/javascripts/modernizr.min.js"></script><title>blog redesign</title></head><body><div id="wrapper"><header id="main-header"><h1><a href="/">smagch.github.com</a></h1></header><div id="container"><nav><ul><li><a href="/">Home</a></li><li><a href="/about/">About</a></li><li><a href="https://twitter.com/smagch">twitter</a></li><li><a href="https://github.com/smagch">github</a></li></ul><ul><li><a href="/posts/2012-11-20-model-is-stateful.html">next</a></li><li><a href="/posts/2011-09-17-smarter-dragging.html">prev</a></li></ul></nav><div id="content"><article><header class="clearfix"><h1><a href="/posts/2012-11-17-blog-redesign.html">blog redesign</a></h1><p class="meta"><time datetime="2012-11-17" pubdate>Nov 17th 2012</time></p></header><article><p>I redesigned my blog from <a href="https://github.com/mojombo/jekyll">jkeyll</a> to <a href="http://www.gnu.org/software/make/manual/make.html">GNU make</a>.
+<!DOCTYPE html><html><head><link rel="stylesheet" href="/stylesheets/post.css"></head><body><header id="header" class="clearfix"><div class="container"><a href="/"><img src="http://www.gravatar.com/avatar/75404230bb6991027394855068b0e487.png"><h1>smagch.github.io</h1></a><aside><a href="/about.html">about me</a></aside></div></header><div id="content"><article class="container"><header class="inner"><h1>Blog Redesign</h1></header><div class="inner"><p>I redesigned my blog from <a href="https://github.com/mojombo/jekyll">jkeyll</a> to <a href="http://www.gnu.org/software/make/manual/make.html">GNU make</a>.
 I researched if there is a nice <a href="http://nodejs.org/">Node.js</a> static site generator for couple of hours.
-I found <a href="https://github.com/logicalparadox/codex">codex</a>. Though it looks pretty nice, I felt quite cumbersome to try a new thing.
-
-</p>
+I found <a href="https://github.com/logicalparadox/codex">codex</a>. Though it looks pretty nice, I felt quite cumbersome to try a new thing.</p>
 <p>And then I came up with a stupid idea that I can run <a href="http://expressjs.com/">express</a> server and then crawl html contents using wget.
-But that didn&#39;t work well. On top of that, that wasn&#39;t maintainable at all.
-
-</p>
-<p>Using Makefile, I learned lots of nice features that I didn&#39;t know, such as <code>$(call ) </code>, <a href="http://www.gnu.org/software/make/manual/make.html#Secondary-Expansion">Secondary Expansion</a>, etc.
-
-</p>
-</article><div class="post-link"><a href="/posts/2012-11-20-model-is-stateful.html" class="noline pull-right">next post</a><a href="/posts/2011-09-17-smarter-dragging.html" class="noline">previous post</a></div></article><div class="comments"><div id="disqus_thread"></div></div><script type="text/javascript">
+But that didn&#39;t work well. On top of that, that wasn&#39;t maintainable at all.</p>
+<p>Using Makefile, I learned lots of nice features that I didn&#39;t know, such as <code>$(call )</code>, <a href="http://www.gnu.org/software/make/manual/make.html#Secondary-Expansion">Secondary Expansion</a>, etc.</p>
+</div></article><div class="comments"><div class="container"><div id="disqus_thread"></div></div></div><script type="text/javascript">
      /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
      var disqus_shortname = 'uithingsconsidered'; // required: replace example with your forum shortname
 
@@ -22,7 +16,7 @@ But that didn&#39;t work well. On top of that, that wasn&#39;t maintainable at a
      })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div><a href="http://github.com/smagch"><img style="position: absolute; top: 40px; right: 0; border: 0;" src="/images/forkme.png" alt="Fork me on GitHub"></a><footer id="main-footer"><span>&copy;2012 &ndash; Shimaguchi Tomoya</span></footer><script type="text/javascript">
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div><script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-25646251-1']);
   _gaq.push(['_trackPageview']);
@@ -33,4 +27,4 @@ But that didn&#39;t work well. On top of that, that wasn&#39;t maintainable at a
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
-</script></div></body></html>
+</script></body></html>

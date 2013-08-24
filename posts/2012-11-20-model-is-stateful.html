@@ -1,17 +1,13 @@
-<!DOCTYPE html><html><head><meta http-equiv="Content-Type" content="text/html; charset=utf-8"><meta name="description" content="about smagch"><meta name="viewport" content="width=device-width"><meta name="author" content="smagch"><meta name="keywords" content="Node.js,javascript"><link rel="stylesheet" href="/stylesheets/home.css"><script src="/javascripts/modernizr.min.js"></script><title>model is stateful</title></head><body><div id="wrapper"><header id="main-header"><h1><a href="/">smagch.github.com</a></h1></header><div id="container"><nav><ul><li><a href="/">Home</a></li><li><a href="/about/">About</a></li><li><a href="https://twitter.com/smagch">twitter</a></li><li><a href="https://github.com/smagch">github</a></li></ul><ul><li><a href="/posts/2012-12-10-assemble-modules-by-events.html">next</a></li><li><a href="/posts/2012-11-17-blog-redesign.html">prev</a></li></ul></nav><div id="content"><article><header class="clearfix"><h1><a href="/posts/2012-11-20-model-is-stateful.html">model is stateful</a></h1><p class="meta"><time datetime="2012-11-20" pubdate>Nov 20th 2012</time></p></header><article><p>I&#39;ve been doing <a href="http://backbonejs.org/">Backbone.js</a> project for quite a while.
+<!DOCTYPE html><html><head><link rel="stylesheet" href="/stylesheets/post.css"></head><body><header id="header" class="clearfix"><div class="container"><a href="/"><img src="http://www.gravatar.com/avatar/75404230bb6991027394855068b0e487.png"><h1>smagch.github.io</h1></a><aside><a href="/about.html">about me</a></aside></div></header><div id="content"><article class="container"><header class="inner"><h1>Model is stateful</h1></header><div class="inner"><p>I&#39;ve been doing <a href="http://backbonejs.org/">Backbone.js</a> project for quite a while.
 So I&#39;m going to share some tips I&#39;ve learned.
 Example application is <a href="https://github.com/smagch/backbone-examples">placed on github</a>.
 This post is the first part of my Backbone tips series.
-So I&#39;ll add more examples in the future.
-
-</p>
+So I&#39;ll add more examples in the future.</p>
 <ul>
 <li>updates Nov. 22 2012: remove a description about verbose JSON.</li>
 </ul>
 <h2><a href="#update-view-via-custom-event">Update View via custom event</a></h2>
-<p>Let&#39;s take a following example.
-
-</p>
+<p>Let&#39;s take a following example.</p>
 <ul>
 <li>There are 20 recent HN comments.</li>
 <li>User can highlight one comment by clicking a comment.</li>
@@ -23,189 +19,175 @@ So I&#39;ll add more examples in the future.
   </a>
 </div>
 
-<p>One way of implementation might be something like this.
-
-</p>
-<pre><code class="lang-javascript"><span class="keyword">var</span> ItemView = Backbone.View.extend({
-  initialize: <span class="function"><span class="keyword">function</span> <span class="params">(options)</span> {</span>
-    <span class="keyword">this</span>.template = options.template;
-    <span class="keyword">this</span>.collection.on(<span class="string">'reset'</span>, <span class="keyword">this</span>.render, <span class="keyword">this</span>);
-  },
-  events: {
-    <span class="string">'click li'</span>: <span class="string">'clicked'</span>
-  },
-  clicked: <span class="function"><span class="keyword">function</span> <span class="params">(e)</span> {</span>
-    <span class="keyword">var</span> $target = $(e.currentTarget);
-    $target
-      .addClass(<span class="string">'selected'</span>);
-      .siblings(<span class="string">'.selected'</span>)
-        .removeClass(<span class="string">'selected'</span>);
-    e.stopPropagation();
-  },
-  render: <span class="function"><span class="keyword">function</span> <span class="params">(collection, options)</span> {</span>
-    <span class="keyword">var</span> json = collection.toJSON();
-    <span class="keyword">var</span> html = <span class="keyword">this</span>.template({ models: json });
-    <span class="keyword">this</span>.$el.empty().html(html);
-    <span class="keyword">return</span> <span class="keyword">this</span>;
-  }
-});</code></pre>
-<p>What I want to point out in this post is that it&#39;s better to write like following.
-
-</p>
-<pre><code class="lang-javascript">
-<span class="keyword">var</span> ItemView = Backbone.View.extend({
-  initialize: <span class="function"><span class="keyword">function</span> <span class="params">(options)</span> {</span>
-    <span class="keyword">this</span>.template = options.template;
-    <span class="keyword">this</span>.collection
-      .on(<span class="string">'reset'</span>, <span class="keyword">this</span>.render, <span class="keyword">this</span>)
-      .on(<span class="string">'select'</span>, <span class="keyword">this</span>.select, <span class="keyword">this</span>)
-      .on(<span class="string">'deselect'</span>, <span class="keyword">this</span>.deselect, <span class="keyword">this</span>);
-  },
-  events: {
-    <span class="string">'click li'</span>: <span class="string">'clicked'</span>
-  },
-  clicked: <span class="function"><span class="keyword">function</span> <span class="params">(e)</span> {</span>
-    <span class="keyword">var</span> id = $(e.currentTarget).attr(<span class="string">'data-id'</span>);
-    <span class="keyword">this</span>.collection.select(id);
-    e.stopPropagation();
-  },
-  get: <span class="function"><span class="keyword">function</span> <span class="params">(id)</span> {</span>
-    <span class="keyword">return</span> <span class="keyword">this</span>.$(<span class="string">'[data-id='</span> + id + <span class="string">']'</span>);
-  },
-  select: <span class="function"><span class="keyword">function</span> <span class="params">(model, options)</span> {</span>
-    <span class="keyword">var</span> $target = <span class="keyword">this</span>.get(model.id);
-    $target.addClass(<span class="string">'selected'</span>);
-  },
-  deselect: <span class="function"><span class="keyword">function</span> <span class="params">(model)</span> {</span>
-    <span class="keyword">var</span> $target = <span class="keyword">this</span>.get(model.id);
-    $target.removeClass(<span class="string">'selected'</span>);
-  },
-  render: <span class="function"><span class="keyword">function</span> <span class="params">(collection, options)</span> {</span>
-    <span class="keyword">var</span> json = collection.toJSON();
-    <span class="keyword">var</span> html = <span class="keyword">this</span>.template({ models: json });
-    <span class="keyword">this</span>.$el.empty().html(html);
-    <span class="keyword">return</span> <span class="keyword">this</span>;
-  }
-});</code></pre>
+<p>One way of implementation might be something like this.</p>
+<pre><code class="lang-javascript"><span class="kd">var</span> <span class="nx">ItemView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+  <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">template</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">template</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">events</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;click li&#39;</span><span class="o">:</span> <span class="s1">&#39;clicked&#39;</span>
+  <span class="p">},</span>
+  <span class="nx">clicked</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">$target</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">);</span>
+    <span class="nx">$target</span>
+      <span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">);</span>
+      <span class="p">.</span><span class="nx">siblings</span><span class="p">(</span><span class="s1">&#39;.selected&#39;</span><span class="p">)</span>
+        <span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">);</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+  <span class="p">},</span>
+  <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">collection</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">template</span><span class="p">({</span> <span class="nx">models</span><span class="o">:</span> <span class="nx">json</span> <span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">empty</span><span class="p">().</span><span class="nx">html</span><span class="p">(</span><span class="nx">html</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre>
+<p>What I want to point out in this post is that it&#39;s better to write like following.</p>
+<pre><code class="lang-javascript"><span class="kd">var</span> <span class="nx">ItemView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+  <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">template</span> <span class="o">=</span> <span class="nx">options</span><span class="p">.</span><span class="nx">template</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">collection</span>
+      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">render</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">select</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;deselect&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">deselect</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">events</span><span class="o">:</span> <span class="p">{</span>
+    <span class="s1">&#39;click li&#39;</span><span class="o">:</span> <span class="s1">&#39;clicked&#39;</span>
+  <span class="p">},</span>
+  <span class="nx">clicked</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">).</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-id&#39;</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">select</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+    <span class="nx">e</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+  <span class="p">},</span>
+  <span class="nx">get</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;[data-id=&#39;</span> <span class="o">+</span> <span class="nx">id</span> <span class="o">+</span> <span class="s1">&#39;]&#39;</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">select</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">$target</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+    <span class="nx">$target</span><span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">deselect</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">$target</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">model</span><span class="p">.</span><span class="nx">id</span><span class="p">);</span>
+    <span class="nx">$target</span><span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">render</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">collection</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">collection</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">();</span>
+    <span class="kd">var</span> <span class="nx">html</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">template</span><span class="p">({</span> <span class="nx">models</span><span class="o">:</span> <span class="nx">json</span> <span class="p">});</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">empty</span><span class="p">().</span><span class="nx">html</span><span class="p">(</span><span class="nx">html</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre>
 <p>The Latter <code>ItemView</code> update its DOM element via <code>&quot;select&quot;</code> and <code>&quot;deselect&quot;</code> events rather than via <code>&quot;click&quot;</code> DOM event.
 It just call collection&#39;s <code>.select()</code> method when it catch <code>&quot;click&quot;</code> event. The former example have less codes.
-But the latter approach is simple in the sense that application&#39;s event flow is well-organized.
-
-</p>
+But the latter approach is simple in the sense that application&#39;s event flow is well-organized.</p>
 <p>In a nutshell, View is just to represent Model.
 So it&#39;s important to take this principle: <em>Change Model rather than View</em>.
-Even if there are no changes in persistent attributes in Model.
+Even if there are no changes in persistent attributes in Model.</p>
+<p>Let&#39;s get into detail implementation of Model and Collection.</p>
+<pre><code class="lang-javascript"><span class="kd">var</span> <span class="nx">ItemModel</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Model</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+  <span class="nx">toVerboseJSON</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">json</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">();</span>
+    <span class="nx">json</span><span class="p">.</span><span class="nx">cid</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">cid</span><span class="p">;</span>
+    <span class="k">return</span> <span class="nx">json</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">parse</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">data</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">data</span><span class="p">.</span><span class="nx">item</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
 
-</p>
-<p>Let&#39;s get into detail implementation of Model and Collection.
+<span class="kd">var</span> <span class="nx">ItemCollection</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">Collection</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+  <span class="nx">model</span><span class="o">:</span> <span class="nx">ItemModel</span><span class="p">,</span>
+  <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_selected</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">params</span><span class="o">:</span> <span class="p">{</span>
+    <span class="nx">limit</span><span class="o">:</span> <span class="mi">20</span><span class="p">,</span>
+    <span class="s1">&#39;filter[fields][type]&#39;</span><span class="o">:</span> <span class="s1">&#39;comment&#39;</span><span class="p">,</span>
+    <span class="s1">&#39;sortby&#39;</span><span class="o">:</span> <span class="s1">&#39;create_ts desc&#39;</span>
+  <span class="p">},</span>
+  <span class="nx">url</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="s1">&#39;http://api.thriftdb.com/api.hnsearch.com/items/_search?&#39;</span>
+      <span class="o">+</span> <span class="nx">$</span><span class="p">.</span><span class="nx">param</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">params</span><span class="p">)</span> <span class="o">+</span> <span class="s1">&#39;&amp;callback=?&#39;</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">parse</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">res</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="nx">res</span><span class="p">.</span><span class="nx">results</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">toVerboseJSON</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">.</span><span class="nx">map</span><span class="p">(</span><span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span> <span class="nx">model</span><span class="p">.</span><span class="nx">toVerboseJSON</span><span class="p">();</span>
+    <span class="p">});</span>
+  <span class="p">},</span>
+  <span class="nx">select</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">model</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">model</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;invlid id : &#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">);</span>
 
-</p>
-<pre><code class="lang-javascript"><span class="keyword">var</span> ItemModel = Backbone.Model.extend({
-  toVerboseJSON: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-    <span class="keyword">var</span> json = <span class="keyword">this</span>.toJSON();
-    json.cid = <span class="keyword">this</span>.cid;
-    <span class="keyword">return</span> json;
-  },
-  parse: <span class="function"><span class="keyword">function</span> <span class="params">(data)</span> {</span>
-    <span class="keyword">return</span> data.item;
-  }
-});
+    <span class="c1">// balk if the modal is already selected</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_selected</span> <span class="o">===</span> <span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">return</span><span class="p">;</span>
+    <span class="p">}</span>
 
-<span class="keyword">var</span> ItemCollection = Backbone.Collection.extend({
-  model: ItemModel,
-  initialize: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-    <span class="keyword">this</span>._selected = <span class="literal">null</span>;
-  },
-  params: {
-    limit: <span class="number">20</span>,
-    <span class="string">'filter[fields][type]'</span>: <span class="string">'comment'</span>,
-    <span class="string">'sortby'</span>: <span class="string">'create_ts desc'</span>
-  },
-  url: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-    <span class="keyword">return</span> <span class="string">'http://api.thriftdb.com/api.hnsearch.com/items/_search?'</span>
-      + $.param(<span class="keyword">this</span>.params) + <span class="string">'&amp;callback=?'</span>;
-  },
-  parse: <span class="function"><span class="keyword">function</span> <span class="params">(res)</span> {</span>
-    <span class="keyword">return</span> res.results;
-  },
-  toVerboseJSON: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-    <span class="keyword">return</span> <span class="keyword">this</span>.map(<span class="function"><span class="keyword">function</span> <span class="params">(model)</span> {</span>
-      <span class="keyword">return</span> model.toVerboseJSON();
-    });
-  },
-  select: <span class="function"><span class="keyword">function</span> <span class="params">(id, options)</span> {</span>
-    <span class="keyword">var</span> model = <span class="keyword">this</span>.get(id);
-    <span class="keyword">if</span> (!model) <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'invlid id : '</span> + id);
+    <span class="c1">// selected model should be single</span>
+    <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_selected</span><span class="p">)</span> <span class="p">{</span>
+      <span class="k">this</span><span class="p">.</span><span class="nx">deselect</span><span class="p">();</span>
+    <span class="p">}</span>
 
-    <span class="comment">// balk if the modal is already selected</span>
-    <span class="keyword">if</span> (<span class="keyword">this</span>._selected === model) {
-      <span class="keyword">return</span>;
-    }
-
-    <span class="comment">// selected model should be single</span>
-    <span class="keyword">if</span> (<span class="keyword">this</span>._selected) {
-      <span class="keyword">this</span>.deselect();
-    }
-
-    <span class="keyword">this</span>._selected = model;
-    <span class="keyword">this</span>.trigger(<span class="string">'select'</span>, model, options);
-    <span class="keyword">return</span> <span class="keyword">this</span>;
-  },
-  deselect: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-    <span class="keyword">if</span> (!<span class="keyword">this</span>._selected) <span class="keyword">return</span>;
-    <span class="keyword">this</span>.trigger(<span class="string">'deselect'</span>, <span class="keyword">this</span>._selected);
-    <span class="keyword">this</span>._selected = <span class="literal">null</span>;
-    <span class="keyword">return</span> <span class="keyword">this</span>;
-  }
-});</code></pre>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_selected</span> <span class="o">=</span> <span class="nx">model</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+  <span class="p">},</span>
+  <span class="nx">deselect</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="k">this</span><span class="p">.</span><span class="nx">_selected</span><span class="p">)</span> <span class="k">return</span><span class="p">;</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;deselect&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">_selected</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_selected</span> <span class="o">=</span> <span class="kc">null</span><span class="p">;</span>
+    <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre>
 <p>In this example, I use <code>data-id</code> attribute.
-The template for item is following.
-
-</p>
-<pre><code>&lt;% _.each(models, <span class="function"><span class="keyword">function</span> <span class="params">(model)</span> {</span> %&gt;
-  <span class="xml"><span class="tag">&lt;<span class="title">li</span> <span class="attribute">data-id</span>=<span class="value">"&lt;%= model.id %&gt;"</span>&gt;</span>
-    <span class="tag">&lt;<span class="title">p</span> <span class="attribute">class</span>=<span class="value">'user'</span>&gt;</span><span class="vbscript">&lt;%= model.username %&gt;</span><span class="tag">&lt;/<span class="title">p</span>&gt;</span>
-    <span class="vbscript">&lt;%= model.text %&gt;</span>
-  <span class="tag">&lt;/<span class="title">li</span>&gt;</span>
-<span class="vbscript">&lt;% }); %&gt;</span></span></code></pre>
+The template for item is following.</p>
+<pre><code>&lt;% _.each(models, function (model) { %&gt;
+  &lt;li data-id=&quot;&lt;%= model.id %&gt;&quot;&gt;
+    &lt;p class=&#39;user&#39;&gt;&lt;%= model.username %&gt;&lt;/p&gt;
+    &lt;%= model.text %&gt;
+  &lt;/li&gt;
+&lt;% }); %&gt;</code></pre>
 <p>The comment item will be deselected with clicking background.
 <code>ItemView</code> stop <code>&quot;click&quot;</code> event propagation with <code>e.stopPropagation();</code> in <code>&quot;click&quot;</code> event handler.
-So it&#39;s safe to do like this.
-
-</p>
-<pre><code class="lang-javascript">$(<span class="string">'body'</span>).on(<span class="string">'click'</span>, <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-  itemCollection.deselect();
-});</code></pre>
+So it&#39;s safe to do like this.</p>
+<pre><code class="lang-javascript"><span class="nx">$</span><span class="p">(</span><span class="s1">&#39;body&#39;</span><span class="p">).</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;click&#39;</span><span class="p">,</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="nx">itemCollection</span><span class="p">.</span><span class="nx">deselect</span><span class="p">();</span>
+<span class="p">});</span>
+</code></pre>
 <h2><a href="#design-event-flow">Design event flow</a></h2>
 <p>Let&#39;s add one more View to make app more neat.
-<code>JsonView</code> will show user raw JSON data on the right side when a comment is selected.
-
-</p>
+<code>JsonView</code> will show user raw JSON data on the right side when a comment is selected.</p>
 <div class='img-container'>
   <a href='http://smagch.github.com/backbone-examples/select2/'>
     <img src='/images/hn-comments-json.png'></img>
   </a>
 </div>
 
-<pre><code class="lang-javascript"><span class="keyword">var</span> JsonView = Backbone.View.extend({
-  initialize: <span class="function"><span class="keyword">function</span> <span class="params">(options)</span> {</span>
-    <span class="keyword">this</span>.collection
-      .on(<span class="string">'select'</span>, <span class="keyword">this</span>.select, <span class="keyword">this</span>)
-      .on(<span class="string">'deselect'</span>, <span class="keyword">this</span>.deselect, <span class="keyword">this</span>);
-  },
-  select: <span class="function"><span class="keyword">function</span> <span class="params">(model, options)</span> {</span>
-    <span class="keyword">var</span> json = model.toJSON();
-    json = JSON.stringify(json, <span class="literal">null</span>, <span class="number">2</span>);
-    json = _.escape(json);
-    <span class="keyword">this</span>.$el.html(<span class="string">'&lt;pre&gt;&lt;code&gt;'</span> + json + <span class="string">'&lt;/code&gt;&lt;/pre&gt;'</span>);
-  },
-  deselect: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-    <span class="keyword">this</span>.$el.empty();
-  }
-});</code></pre>
-<p>Let&#39;s sort out the architecture of event flow.
-
-</p>
+<pre><code class="lang-javascript"><span class="kd">var</span> <span class="nx">JsonView</span> <span class="o">=</span> <span class="nx">Backbone</span><span class="p">.</span><span class="nx">View</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span>
+  <span class="nx">initialize</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">collection</span>
+      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">select</span><span class="p">,</span> <span class="k">this</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">on</span><span class="p">(</span><span class="s1">&#39;deselect&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">.</span><span class="nx">deselect</span><span class="p">,</span> <span class="k">this</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">select</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">model</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+    <span class="kd">var</span> <span class="nx">json</span> <span class="o">=</span> <span class="nx">model</span><span class="p">.</span><span class="nx">toJSON</span><span class="p">();</span>
+    <span class="nx">json</span> <span class="o">=</span> <span class="nx">JSON</span><span class="p">.</span><span class="nx">stringify</span><span class="p">(</span><span class="nx">json</span><span class="p">,</span> <span class="kc">null</span><span class="p">,</span> <span class="mi">2</span><span class="p">);</span>
+    <span class="nx">json</span> <span class="o">=</span> <span class="nx">_</span><span class="p">.</span><span class="nx">escape</span><span class="p">(</span><span class="nx">json</span><span class="p">);</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">html</span><span class="p">(</span><span class="s1">&#39;&lt;pre&gt;&lt;code&gt;&#39;</span> <span class="o">+</span> <span class="nx">json</span> <span class="o">+</span> <span class="s1">&#39;&lt;/code&gt;&lt;/pre&gt;&#39;</span><span class="p">);</span>
+  <span class="p">},</span>
+  <span class="nx">deselect</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">$el</span><span class="p">.</span><span class="nx">empty</span><span class="p">();</span>
+  <span class="p">}</span>
+<span class="p">});</span>
+</code></pre>
+<p>Let&#39;s sort out the architecture of event flow.</p>
 <h3>ItemCollection</h3>
 <ul>
 <li><code>.select()</code> - trigger <code>&quot;select&quot;</code> event and pass selected <code>ItemModel</code></li>
@@ -227,165 +209,148 @@ So it&#39;s safe to do like this.
 <li><code>&quot;click&quot;</code> event =&gt; deselect</li>
 </ul>
 <p><code>ItemView</code> will need to have a reference of <code>JsonView</code> without <code>&quot;select&quot;</code> event.
-Let&#39;s take a look at one possible implementation without <code>&quot;select&quot;</code> event.
-
-</p>
+Let&#39;s take a look at one possible implementation without <code>&quot;select&quot;</code> event.</p>
 <h3>ItemView without <code>&quot;select&quot;</code> event</h3>
 <ul>
 <li><code>&quot;click&quot;</code> event =&gt; highlight comment item &amp; show JSON.</li>
 </ul>
-<pre><code class="lang-javascript"><span class="comment">/**
- * ItemCollection click handler without "select" event
- */</span>
+<pre><code class="lang-javascript"><span class="cm">/**</span>
+<span class="cm"> * ItemCollection click handler without &quot;select&quot; event</span>
+<span class="cm"> */</span>
 
-clicked: <span class="keyword">function</span>(e) {
-  <span class="keyword">var</span> $target = $(e.currentTarget);
-  <span class="keyword">var</span> id = $target.attr(<span class="string">'data-id'</span>);
-  <span class="keyword">var</span> model = <span class="keyword">this</span>.collection.get(id);
+<span class="nx">clicked</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">e</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">$target</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">id</span> <span class="o">=</span> <span class="nx">$target</span><span class="p">.</span><span class="nx">attr</span><span class="p">(</span><span class="s1">&#39;data-id&#39;</span><span class="p">);</span>
+  <span class="kd">var</span> <span class="nx">model</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">collection</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
 
-  <span class="comment">// highlight comment item</span>
-  <span class="keyword">var</span> $target = $(e.currentTarget);
-  $target
-    .addClass(<span class="string">'selected'</span>);
-    .siblings(<span class="string">'.selected'</span>)
-      .removeClass(<span class="string">'selected'</span>);
+  <span class="c1">// highlight comment item</span>
+  <span class="kd">var</span> <span class="nx">$target</span> <span class="o">=</span> <span class="nx">$</span><span class="p">(</span><span class="nx">e</span><span class="p">.</span><span class="nx">currentTarget</span><span class="p">);</span>
+  <span class="nx">$target</span>
+    <span class="p">.</span><span class="nx">addClass</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">);</span>
+    <span class="p">.</span><span class="nx">siblings</span><span class="p">(</span><span class="s1">&#39;.selected&#39;</span><span class="p">)</span>
+      <span class="p">.</span><span class="nx">removeClass</span><span class="p">(</span><span class="s1">&#39;selected&#39;</span><span class="p">);</span>
 
-  <span class="comment">// show JSON</span>
-  <span class="keyword">this</span>.jsonView.render(model);
+  <span class="c1">// show JSON</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">jsonView</span><span class="p">.</span><span class="nx">render</span><span class="p">(</span><span class="nx">model</span><span class="p">);</span>
 
-  e.stopPropagation();
-}</code></pre>
-<p>Even though <code>ItemView</code> and <code>JsonView</code> are sibling in DOM structure, <code>ItemView</code> need to hold <code>JsonView</code> in this way.
-
-</p>
-<pre><code><span class="tag">&lt;<span class="title">h1</span>&gt;</span>Recent HN Comments<span class="tag">&lt;/<span class="title">h1</span>&gt;</span>
-<span class="tag">&lt;<span class="title">ul</span> <span class="attribute">id</span>=<span class="value">'item-view'</span>&gt;</span><span class="tag">&lt;/<span class="title">ul</span>&gt;</span>
-<span class="tag">&lt;<span class="title">div</span> <span class="attribute">id</span>=<span class="value">'json-view'</span>&gt;</span><span class="tag">&lt;/<span class="title">div</span>&gt;</span></code></pre>
+  <span class="nx">e</span><span class="p">.</span><span class="nx">stopPropagation</span><span class="p">();</span>
+<span class="p">}</span>
+</code></pre>
+<p>Even though <code>ItemView</code> and <code>JsonView</code> are sibling in DOM structure, <code>ItemView</code> need to hold <code>JsonView</code> in this way.</p>
+<pre><code>&lt;h1&gt;Recent HN Comments&lt;/h1&gt;
+&lt;ul id=&#39;item-view&#39;&gt;&lt;/ul&gt;
+&lt;div id=&#39;json-view&#39;&gt;&lt;/div&gt;</code></pre>
 <p>In this case <code>JsonView</code> is just a simple module which intended to be used from other module.
-Selecting a comment is internally handled in <code>ItemView</code>.
+Selecting a comment is internally handled in <code>ItemView</code>.</p>
+<pre><code class="lang-javascript"><span class="cm">/**</span>
+<span class="cm"> * Approach without &quot;select&quot; event</span>
+<span class="cm"> * itemView need to have jsonView</span>
+<span class="cm"> *</span>
+<span class="cm"> * + itemView</span>
+<span class="cm"> *   - el</span>
+<span class="cm"> *   - collection</span>
+<span class="cm"> *   - template</span>
+<span class="cm"> *   + jsonView</span>
+<span class="cm"> *     - el</span>
+<span class="cm"> */</span>
 
-</p>
-<pre><code class="lang-javascript"><span class="comment">/**
- * Approach without "select" event
- * itemView need to have jsonView
- *
- * + itemView
- *   - el
- *   - collection
- *   - template
- *   + jsonView
- *     - el
- */</span>
+<span class="kd">var</span> <span class="nx">itemCollection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ItemCollection</span><span class="p">();</span>
 
-<span class="keyword">var</span> itemCollection = <span class="keyword">new</span> ItemCollection();
+<span class="kd">var</span> <span class="nx">jsonView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">JsonView</span><span class="p">({</span>
+  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#json-view&#39;</span>
+<span class="p">});</span>
 
-<span class="keyword">var</span> jsonView = <span class="keyword">new</span> JsonView({
-  el: <span class="string">'#json-view'</span>
-});
+<span class="kd">var</span> <span class="nx">itemView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ItemView</span><span class="p">({</span>
+  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#item-view&#39;</span><span class="p">,</span>
+  <span class="nx">collection</span><span class="o">:</span> <span class="nx">itemCollection</span><span class="p">,</span>
+  <span class="nx">template</span><span class="o">:</span> <span class="nx">itemTemplate</span><span class="p">,</span>
+  <span class="nx">jsonView</span><span class="o">:</span> <span class="nx">jsonView</span>
+<span class="p">});</span>
+</code></pre>
+<p>On the other hand, with <code>&quot;select&quot;</code> event, <code>JsonView</code> and <code>ItemView</code> is peer module. They don&#39;t care about each other.</p>
+<pre><code class="lang-javascript"><span class="cm">/**</span>
+<span class="cm"> * Approach with &quot;select&quot; event</span>
+<span class="cm"> * jsonView and itemView don&#39;t care about each other</span>
+<span class="cm"> *</span>
+<span class="cm"> * + itemView</span>
+<span class="cm"> *   - el</span>
+<span class="cm"> *   - collection</span>
+<span class="cm"> *   - template</span>
+<span class="cm"> *</span>
+<span class="cm"> * + jsonView</span>
+<span class="cm"> *   - el</span>
+<span class="cm"> *   - collection</span>
+<span class="cm"> */</span>
 
-<span class="keyword">var</span> itemView = <span class="keyword">new</span> ItemView({
-  el: <span class="string">'#item-view'</span>,
-  collection: itemCollection,
-  template: itemTemplate,
-  jsonView: jsonView
-});</code></pre>
-<p>On the other hand, with <code>&quot;select&quot;</code> event, <code>JsonView</code> and <code>ItemView</code> is peer module. They don&#39;t care about each other.
+<span class="kd">var</span> <span class="nx">itemCollection</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ItemCollection</span><span class="p">();</span>
 
-</p>
-<pre><code class="lang-javascript"><span class="comment">/**
- * Approach with "select" event
- * jsonView and itemView don't care about each other
- *
- * + itemView
- *   - el
- *   - collection
- *   - template
- *
- * + jsonView
- *   - el
- *   - collection
- */</span>
+<span class="kd">var</span> <span class="nx">jsonView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">JsonView</span><span class="p">({</span>
+  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#json-view&#39;</span><span class="p">,</span>
+  <span class="nx">collection</span><span class="o">:</span> <span class="nx">itemCollection</span>
+<span class="p">});</span>
 
-<span class="keyword">var</span> itemCollection = <span class="keyword">new</span> ItemCollection();
-
-<span class="keyword">var</span> jsonView = <span class="keyword">new</span> JsonView({
-  el: <span class="string">'#json-view'</span>,
-  collection: itemCollection
-});
-
-<span class="keyword">var</span> itemView = <span class="keyword">new</span> ItemView({
-  el: <span class="string">'#item-view'</span>,
-  collection: itemCollection,
-  template: itemTemplate
-});</code></pre>
+<span class="kd">var</span> <span class="nx">itemView</span> <span class="o">=</span> <span class="k">new</span> <span class="nx">ItemView</span><span class="p">({</span>
+  <span class="nx">el</span><span class="o">:</span> <span class="s1">&#39;#item-view&#39;</span><span class="p">,</span>
+  <span class="nx">collection</span><span class="o">:</span> <span class="nx">itemCollection</span><span class="p">,</span>
+  <span class="nx">template</span><span class="o">:</span> <span class="nx">itemTemplate</span>
+<span class="p">});</span>
+</code></pre>
 <p>In application in this scale, the benefit isn&#39;t much clear.
 But it should be noted that there is a big difference in structure between them.
 With <code>&quot;select&quot;</code> event, <code>JsonView</code> describe its behavior by binding <code>&quot;select&quot;</code> and <code>&quot;deselect&quot;</code> event handler.
-So in this case, <code>JsonView</code> is an application specific module.
-
-</p>
+So in this case, <code>JsonView</code> is an application specific module.</p>
 <h2><a href="#dont-trigger-outside-of-module">Don&#39;t <code>.trigger()</code> outside of module</a></h2>
 <p>Once you define <code>&quot;select&quot;</code> event, you may want to <code>collection.trigger(&quot;select&quot;, model);</code>
 when you want item to be selected.
-This is a certain bad practice when you design your own custom event.
+This is a certain bad practice when you design your own custom event.</p>
+<p>Let&#39;s take a look at <code>ItemCollection.prototype.select</code> method one more time.</p>
+<pre><code class="lang-javascript"><span class="nx">select</span><span class="o">:</span> <span class="kd">function</span> <span class="p">(</span><span class="nx">id</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+  <span class="kd">var</span> <span class="nx">model</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">get</span><span class="p">(</span><span class="nx">id</span><span class="p">);</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">model</span><span class="p">)</span> <span class="k">throw</span> <span class="k">new</span> <span class="nb">Error</span><span class="p">(</span><span class="s1">&#39;invlid id : &#39;</span> <span class="o">+</span> <span class="nx">id</span><span class="p">);</span>
 
-</p>
-<p>Let&#39;s take a look at <code>ItemCollection.prototype.select</code> method one more time.
+  <span class="c1">// balk if the modal is already selected</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_selected</span> <span class="o">===</span> <span class="nx">model</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">return</span><span class="p">;</span>
+  <span class="p">}</span>
 
-</p>
-<pre><code class="lang-javascript">select: <span class="function"><span class="keyword">function</span> <span class="params">(id, options)</span> {</span>
-  <span class="keyword">var</span> model = <span class="keyword">this</span>.get(id);
-  <span class="keyword">if</span> (!model) <span class="keyword">throw</span> <span class="keyword">new</span> Error(<span class="string">'invlid id : '</span> + id);
+  <span class="c1">// selected model should be single</span>
+  <span class="k">if</span> <span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">_selected</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">deselect</span><span class="p">();</span>
+  <span class="p">}</span>
 
-  <span class="comment">// balk if the modal is already selected</span>
-  <span class="keyword">if</span> (<span class="keyword">this</span>._selected === model) {
-    <span class="keyword">return</span>;
-  }
-
-  <span class="comment">// selected model should be single</span>
-  <span class="keyword">if</span> (<span class="keyword">this</span>._selected) {
-    <span class="keyword">this</span>.deselect();
-  }
-
-  <span class="keyword">this</span>._selected = model;
-  <span class="keyword">this</span>.trigger(<span class="string">'select'</span>, model, options);
-  <span class="keyword">return</span> <span class="keyword">this</span>;
-}</code></pre>
-<p>It does internally two things.
-
-</p>
+  <span class="k">this</span><span class="p">.</span><span class="nx">_selected</span> <span class="o">=</span> <span class="nx">model</span><span class="p">;</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;select&#39;</span><span class="p">,</span> <span class="nx">model</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
+<p>It does internally two things.</p>
 <ul>
 <li>balk if the modal is already selected</li>
 <li>call <code>.deselect()</code> internally to keep selected model single.</li>
 </ul>
 <p>Where do you put this kind of internal flow control when you trigger events spontaneously outside of module?
 Once you define custom event, you can get hang of application&#39;s event flow clearly.
-But it&#39;s just binding functions when you trigger custom event randomly outside of module.
-
-</p>
+But it&#39;s just binding functions when you trigger custom event randomly outside of module.</p>
 <p>Let&#39;s take a look at <code>Backbone.Collection.prototype.reset</code> from <a href="http://backbonejs.org/">Backbone.js</a> v0.9.2 source.
-</p>
-<p><a href="https://github.com/documentcloud/backbone/blob/0.9.2/backbone.js#L738-L748">https://github.com/documentcloud/backbone/blob/0.9.2/backbone.js#L738-L748</a>
-
-</p>
-<pre><code class="lang-javascript">reset: <span class="keyword">function</span>(models, options) {
-  <span class="keyword">for</span> (<span class="keyword">var</span> i = <span class="number">0</span>, l = <span class="keyword">this</span>.models.length; i &lt; l; i++) {
-    <span class="keyword">this</span>._removeReference(<span class="keyword">this</span>.models[i]);
-  }
-  <span class="keyword">this</span>._reset();
-  <span class="keyword">if</span> (models) <span class="keyword">this</span>.add(models, _.extend({silent: <span class="literal">true</span>}, options));
-  <span class="keyword">if</span> (!options || !options.silent) <span class="keyword">this</span>.trigger(<span class="string">'reset'</span>, <span class="keyword">this</span>, options);
-  <span class="keyword">return</span> <span class="keyword">this</span>;
-},</code></pre>
+<a href="https://github.com/documentcloud/backbone/blob/0.9.2/backbone.js#L738-L748">https://github.com/documentcloud/backbone/blob/0.9.2/backbone.js#L738-L748</a></p>
+<pre><code class="lang-javascript"><span class="nx">reset</span><span class="o">:</span> <span class="kd">function</span><span class="p">(</span><span class="nx">models</span><span class="p">,</span> <span class="nx">options</span><span class="p">)</span> <span class="p">{</span>
+  <span class="k">for</span> <span class="p">(</span><span class="kd">var</span> <span class="nx">i</span> <span class="o">=</span> <span class="mi">0</span><span class="p">,</span> <span class="nx">l</span> <span class="o">=</span> <span class="k">this</span><span class="p">.</span><span class="nx">models</span><span class="p">.</span><span class="nx">length</span><span class="p">;</span> <span class="nx">i</span> <span class="o">&lt;</span> <span class="nx">l</span><span class="p">;</span> <span class="nx">i</span><span class="o">++</span><span class="p">)</span> <span class="p">{</span>
+    <span class="k">this</span><span class="p">.</span><span class="nx">_removeReference</span><span class="p">(</span><span class="k">this</span><span class="p">.</span><span class="nx">models</span><span class="p">[</span><span class="nx">i</span><span class="p">]);</span>
+  <span class="p">}</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">_reset</span><span class="p">();</span>
+  <span class="k">if</span> <span class="p">(</span><span class="nx">models</span><span class="p">)</span> <span class="k">this</span><span class="p">.</span><span class="nx">add</span><span class="p">(</span><span class="nx">models</span><span class="p">,</span> <span class="nx">_</span><span class="p">.</span><span class="nx">extend</span><span class="p">({</span><span class="nx">silent</span><span class="o">:</span> <span class="kc">true</span><span class="p">},</span> <span class="nx">options</span><span class="p">));</span>
+  <span class="k">if</span> <span class="p">(</span><span class="o">!</span><span class="nx">options</span> <span class="o">||</span> <span class="o">!</span><span class="nx">options</span><span class="p">.</span><span class="nx">silent</span><span class="p">)</span> <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;reset&#39;</span><span class="p">,</span> <span class="k">this</span><span class="p">,</span> <span class="nx">options</span><span class="p">);</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">},</span>
+</code></pre>
 <p>It trigger <code>&quot;reset&quot;</code> event via <code>.reset()</code> method after some cleanup logics.
-Let&#39;s take this pattern all the time.
-
-</p>
-<pre><code class="lang-javascript">custom_event: <span class="function"><span class="keyword">function</span> <span class="params">()</span> {</span>
-  <span class="comment">// some internal logics</span>
-  <span class="keyword">this</span>.trigger(<span class="string">'custom_event'</span>);
-  <span class="keyword">return</span> <span class="keyword">this</span>;
-}</code></pre>
+Let&#39;s take this pattern all the time.</p>
+<pre><code class="lang-javascript"><span class="nx">custom_event</span><span class="o">:</span> <span class="kd">function</span> <span class="p">()</span> <span class="p">{</span>
+  <span class="c1">// some internal logics</span>
+  <span class="k">this</span><span class="p">.</span><span class="nx">trigger</span><span class="p">(</span><span class="s1">&#39;custom_event&#39;</span><span class="p">);</span>
+  <span class="k">return</span> <span class="k">this</span><span class="p">;</span>
+<span class="p">}</span>
+</code></pre>
 <h2><a href="#consider-which-data-user-is-interacting-with-before-starting-to-write-codes">Consider which data user is interacting with before starting to write codes</a></h2>
 <p>Even if you&#39;re using <a href="http://backbonejs.org/">Backbone.js</a> and get rid of DOM manipulation spaghetti,
 spaghetti can still happen when you don&#39;t design your application carefully.
@@ -393,16 +358,12 @@ What Application stand for?
 I&#39;d say <em>Application is to let user interact with data.</em>
 So it&#39;s important to consider data first.
 And then you may design some custom events and their event flow to come up to the spec of application.
-In the example, I came up with <code>&quot;select&quot;</code> event to allow user to select and show a model from HN comment item list.
-
-</p>
+In the example, I came up with <code>&quot;select&quot;</code> event to allow user to select and show a model from HN comment item list.</p>
 <h2><a href="#next-post">Next post</a></h2>
 <p>Next time, I&#39;ll describe more about how to design custom events which do server request.
 And how to interact with Router nicely in a larger scale application.
-In the future, I want to give a large scale example which has lots of Collection and multiple Router.
-
-</p>
-</article><div class="post-link"><a href="/posts/2012-12-10-assemble-modules-by-events.html" class="noline pull-right">next post</a><a href="/posts/2012-11-17-blog-redesign.html" class="noline">previous post</a></div></article><div class="comments"><div id="disqus_thread"></div></div><script type="text/javascript">
+In the future, I want to give a large scale example which has lots of Collection and multiple Router.</p>
+</div></article><div class="comments"><div class="container"><div id="disqus_thread"></div></div></div><script type="text/javascript">
      /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
      var disqus_shortname = 'uithingsconsidered'; // required: replace example with your forum shortname
 
@@ -414,7 +375,7 @@ In the future, I want to give a large scale example which has lots of Collection
      })();
 </script>
 <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div></div><a href="http://github.com/smagch"><img style="position: absolute; top: 40px; right: 0; border: 0;" src="/images/forkme.png" alt="Fork me on GitHub"></a><footer id="main-footer"><span>&copy;2012 &ndash; Shimaguchi Tomoya</span></footer><script type="text/javascript">
+<a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a></div><script type="text/javascript">
   var _gaq = _gaq || [];
   _gaq.push(['_setAccount', 'UA-25646251-1']);
   _gaq.push(['_trackPageview']);
@@ -425,4 +386,4 @@ In the future, I want to give a large scale example which has lots of Collection
     var s = document.getElementsByTagName('script')[0]; s.parentNode.insertBefore(ga, s);
   })();
 
-</script></div></body></html>
+</script></body></html>

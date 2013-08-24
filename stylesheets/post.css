@@ -175,12 +175,7 @@ article h2{margin-top:40px}
 h2 a{font-size:24px}
 pre{font-size:14px;line-height:18px}
 article h2{margin-top:50px}
-}ul.items{list-style:none;margin:0;padding:0;width:100%;padding:0 0 200px;}
-ul.items li{position:relative;}
-ul.items li a{display:block;margin:0 auto;font-size:26px;padding-left:20px;line-height:70px;height:60px;border-bottom:1px solid #efebeb;text-decoration:none}
-ul.items li time{position:absolute;bottom:2px;right:10px;font-size:12px;color:#b7a3a3}
-ul.items h3.center{margin-top:80px}
-@media only screen and (min-width: 35em){}.ir{border:0;font:0/0 a;text-shadow:none;color:transparent;background-color:transparent}
+}@media only screen and (min-width: 35em){}.ir{border:0;font:0/0 a;text-shadow:none;color:transparent;background-color:transparent}
 .hidden{display:none !important;visibility:hidden}
 .visuallyhidden{border:0;clip:rect(0 0 0 0);height:1px;margin:-1px;overflow:hidden;padding:0;position:absolute;width:1px}
 .visuallyhidden.focusable:active,.visuallyhidden.focusable:focus{clip:auto;height:auto;margin:0;overflow:visible;position:static;width:auto}
