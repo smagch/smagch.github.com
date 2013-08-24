@@ -10,13 +10,13 @@ html
       script(src='/javascripts/modernizr.min.js')
 
   body
-    header#main-header
+    header#header.clearfix
       .container
-        h1
-          a(href="/") smagch.github.io
+        a(href='/')
+          img(src='http://www.gravatar.com/avatar/75404230bb6991027394855068b0e487.png')
+          h1 smagch.github.io
         aside
-          a(href='/about.html')
-            img(src='http://www.gravatar.com/avatar/75404230bb6991027394855068b0e487.png')
+          a(href='/about.html') about me
 
     #content
       block content

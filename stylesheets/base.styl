@@ -11,35 +11,45 @@ serif()
 mono()
   font-family: "Ubuntu" monospace, Serif
 
-// fluid width
 .container
   max-width: 640px
   margin: 0 auto
   position: relative
+  display: block
 
 .inner
   margin: 0 20px
 
-#main-header
+#header
   background: #f8f8f8
   border-bottom: 1px solid #e8e8e8
   headerHeight = 60px
   h1
     margin: 0 0 0 20px
-    a
-      font-size: 20px
-      color: #1d7921
-      height: headerHeight
-      line-height: headerHeight
-      vertical-align: middle
+    float: left
+    font-size: 20px
+    color: #1d7921
+    height: headerHeight
+    line-height: headerHeight
+    vertical-align: middle
   img
-    position: absolute
-    right: 0
-    // (60 - 54) / 2
-    top: 3px
-    width: 54px
-    height: 54px
+    float: left
+    // 60 - 5 * 2
+    margin-top: 6px
+    margin-left: 10px
+    width: 48px
+    height: 48px
     border-radius: 4px
+  aside
+    float: right
+    margin-right: 20px
+    line-height: headerHeight
+    height: headerHeight
+    a
+      text-decoration: none
+      font-weight: lighter
+      color: #882f1f
+      font-size: 16px
 
 html
   sans()
