@@ -35,8 +35,10 @@ var templates = new AsyncCache({
 
     // watch file and reset template
     fs.watch(filepath, function () {
-      console.log('re-compiling %s', filepath);
-      templates.del(filename);
+      if (templates.has(filename)) {
+        console.log('re-compiling %s', filepath);
+        templates.del(filename);
+      }
     });
   }
 });
