@@ -9,3 +9,8 @@ block content
       h1 #{title}
     .inner!= content
 
+  .comments
+    .container
+      #disqus_thread
+  include lib/disqus.html
+
